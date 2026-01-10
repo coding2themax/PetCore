@@ -25,6 +25,47 @@ AI capabilities (such as summarization or semantic re-ranking) are **strictly op
 
 PetCore starts as a cohesive monolith to reduce operational complexity and cognitive load, then **selectively extracts services** (e.g., matching, search, AI augmentation) only when justified by scaling requirements, failure isolation, or deployment cadence—mirroring how real production systems evolve.
 
+## Architecture (Stage 1 — Modular Monolith)
+
+```mermaid
+flowchart TB
+    User[User Browser]
+
+    subgraph FE[Frontend]
+        React[React SPA<br/>React + TypeScript<br/>React Router]
+    end
+
+    subgraph Edge[Edge / Routing]
+        Gateway[API Gateway / ALB]
+    end
+
+    subgraph BE[PetCore Backend<br/>Java 17 + Spring Boot<br/>Modular Monolith]
+        Profile[Pet Profile Module<br/>- Pets & Shelters<br/>- Intake Records]
+        Matching[Matching & Classification Module<br/>- Rule-Based Scoring<br/>- Compatibility Logic]
+        Search[Search Module<br/>- Filtering & Ranking<br/>- Explainable Results]
+        AI[AI Augmentation Module<br/>(Optional, Feature-Flagged)]
+    end
+
+    DB[(PostgreSQL (RDS)<br/>Single Schema)]
+
+    AIProvider[AI Provider<br/>(Bedrock / LLM)]
+
+    User --> React
+    React -->|HTTPS| Gateway
+    Gateway --> BE
+
+    BE --> Profile
+    BE --> Matching
+    BE --> Search
+    BE --> AI
+
+    Profile --> DB
+    Matching --> DB
+    Search --> DB
+
+    AI -. Optional .-> AIProvider
+```
+
 ## License
 
 MIT — free to use, modify, and learn from.
