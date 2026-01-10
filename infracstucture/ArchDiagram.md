@@ -29,8 +29,7 @@ flowchart TB
         Search["Search Module
         - Filtering & Ranking
         - Explainable Results"]
-        AI["AI Augmentation Module
-        (Optional, Feature-Flagged)"]
+        AI["AI Augmentation Module<br/>(Optional, Feature-Flagged)"]
     end
 
     DB[("PostgreSQL (RDS)\nSingle Schema")]
