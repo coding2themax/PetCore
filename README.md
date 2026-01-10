@@ -32,23 +32,23 @@ flowchart TB
     User[User Browser]
 
     subgraph FE[Frontend]
-        React[React SPA<br/>React + TypeScript<br/>React Router]
+        React["React SPA\nReact + TypeScript\nReact Router"]
     end
 
     subgraph Edge[Edge / Routing]
         Gateway[API Gateway / ALB]
     end
 
-    subgraph BE[PetCore Backend<br/>Java 17 + Spring Boot<br/>Modular Monolith]
-        Profile[Pet Profile Module<br/>- Pets & Shelters<br/>- Intake Records]
-        Matching[Matching & Classification Module<br/>- Rule-Based Scoring<br/>- Compatibility Logic]
-        Search[Search Module<br/>- Filtering & Ranking<br/>- Explainable Results]
-        AI[AI Augmentation Module<br/>(Optional, Feature-Flagged)]
+    subgraph BE["PetCore Backend\nJava 17 + Spring Boot\nModular Monolith"]
+        Profile["Pet Profile Module\n- Pets & Shelters\n- Intake Records"]
+        Matching["Matching & Classification Module\n- Rule-Based Scoring\n- Compatibility Logic"]
+        Search["Search Module\n- Filtering & Ranking\n- Explainable Results"]
+        AI["AI Augmentation Module\n(Optional, Feature-Flagged)"]
     end
 
-    DB[(PostgreSQL (RDS)<br/>Single Schema)]
+    DB[("PostgreSQL (RDS)\nSingle Schema")]
 
-    AIProvider[AI Provider<br/>(Bedrock / LLM)]
+    AIProvider["AI Provider\n(Bedrock / LLM)"]
 
     User --> React
     React -->|HTTPS| Gateway
