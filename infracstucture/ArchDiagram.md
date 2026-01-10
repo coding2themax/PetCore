@@ -61,7 +61,7 @@ flowchart TB
     User[User Browser]
 
     subgraph FE[Frontend]
-        React[React SPA<br/>React + TypeScript<br/>React Router]
+        React[React SPA React + TypeScript React Router]
     end
 
     subgraph Edge[Edge / Routing]
@@ -71,23 +71,23 @@ flowchart TB
     React -->|HTTPS| Gateway
 
     subgraph Core[Core Services]
-        Profile[pet-profile-service<br/>Java + Spring Boot]
+        Profile[pet-profile-service Java + Spring Boot]
     end
 
     subgraph Domain[Extracted Domain Services]
-        Matching[pet-matching-service<br/>Java + Spring Boot]
-        Search[pet-search-service<br/>Java + Spring Boot]
+        Matching[pet-matching-service Java + Spring Boot]
+        Search[pet-search-service Java + Spring Boot]
     end
 
     subgraph AIBlock[AI Services]
-        AIService[pet-augmentation-service<br/>(Optional)]
+        AIService[pet-augmentation-service (Optional)]
     end
 
     ProfileDB[(PostgreSQL (RDS))]
     MatchingDB[(DynamoDB)]
     SearchDB[(OpenSearch)]
 
-    AIProvider[AI Provider<br/>(Bedrock / LLM)]
+    AIProvider[AI Provider (Bedrock / LLM)]
 
     Gateway --> Profile
     Gateway --> Matching
