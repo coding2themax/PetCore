@@ -56,7 +56,6 @@ flowchart TB
 ## Architecture (Stage 2 — Selective Microservices)
 
 ```mermaid
-
 flowchart TB
     User[User Browser]
 
