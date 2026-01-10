@@ -32,7 +32,9 @@ flowchart TB
     User[User Browser]
 
     subgraph FE[Frontend]
-        React["React SPA\nReact + TypeScript\nReact Router"]
+        React["React SPA
+        React + TypeScript
+        React Router"]
     end
 
     subgraph Edge[Edge / Routing]
