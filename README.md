@@ -41,11 +41,20 @@ flowchart TB
         Gateway[API Gateway / ALB]
     end
 
-    subgraph BE["PetCore Backend\nJava 17 + Spring Boot\nModular Monolith"]
-        Profile["Pet Profile Module\n- Pets & Shelters\n- Intake Records"]
-        Matching["Matching & Classification Module\n- Rule-Based Scoring\n- Compatibility Logic"]
-        Search["Search Module\n- Filtering & Ranking\n- Explainable Results"]
-        AI["AI Augmentation Module\n(Optional, Feature-Flagged)"]
+    subgraph BE["PetCore Backend
+        Java 17 + Spring Boot
+        Modular Monolith"]
+        Profile["Pet Profile Module
+        - Pets & Shelters
+        - Intake Records"]
+        Matching["Matching & Classification Module
+        - Rule-Based Scoring
+        - Compatibility Logic"]
+        Search["Search Module
+        - Filtering & Ranking
+        - Explainable Results"]
+        AI["AI Augmentation Module
+        (Optional, Feature-Flagged)"]
     end
 
     DB[("PostgreSQL (RDS)\nSingle Schema")]
