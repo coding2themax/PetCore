@@ -43,7 +43,11 @@ flowchart TB
 
     subgraph BE["PetCore Backend
         Java 17 + Spring Boot
-        Modular Monolith"]
+        Modular Monolith.
+
+
+
+        "]
 
 
 
