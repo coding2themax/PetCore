@@ -41,13 +41,7 @@ flowchart TB
         Gateway[API Gateway / ALB]
     end
 
-    subgraph BE["PetCore Backend
-        Java 17 + Spring Boot
-        Modular Monolith.
-
-
-
-        "]
+    subgraph BE["PetCore Backend Java 17 + Spring Boot Modular Monolith"]
 
 
 
