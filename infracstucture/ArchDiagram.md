@@ -7,9 +7,7 @@ flowchart TB
     User[User Browser]
 
     subgraph FE[Frontend]
-        React["React SPA
-        React + TypeScript
-        React Router"]
+        React["React SPA<br/>React + TypeScript<br/>React Router"]
     end
 
     subgraph Edge[Edge / Routing]
@@ -20,21 +18,15 @@ flowchart TB
 
 
 
-        Profile["Pet Profile Module
-        - Pets & Shelters
-        - Intake Records"]
-        Matching["Matching & Classification Module
-        - Rule-Based Scoring
-        - Compatibility Logic"]
-        Search["Search Module
-        - Filtering & Ranking
-        - Explainable Results"]
+        Profile["Pet Profile Module<br/>- Pets & Shelters<br/>- Intake Records"]
+        Matching["Matching & Classification Module<br/>- Rule-Based Scoring<br/>- Compatibility Logic"]
+        Search["Search Module<br/>- Filtering & Ranking<br/>- Explainable Results"]
         AI["AI Augmentation Module<br/>(Optional, Feature-Flagged)"]
     end
 
-    DB[("PostgreSQL (RDS)\nSingle Schema")]
+    DB[("PostgreSQL (RDS)<br/>Single Schema")]
 
-    AIProvider["AI Provider\n(Bedrock / LLM)"]
+    AIProvider["AI Provider<br/>(Bedrock / LLM)"]
 
     User --> React
     React -->|HTTPS| Gateway
@@ -59,7 +51,7 @@ flowchart TB
     User[User Browser]
 
     subgraph FE[Frontend]
-        React[React SPA React + TypeScript React Router]
+        React["React SPA<br/>React + TypeScript<br/>React Router"]
     end
 
     subgraph Edge[Edge / Routing]
@@ -69,23 +61,23 @@ flowchart TB
     React -->|HTTPS| Gateway
 
     subgraph Core[Core Services]
-        Profile[pet-profile-service Java + Spring Boot]
+        Profile["pet-profile-service<br/>Java + Spring Boot"]
     end
 
     subgraph Domain[Extracted Domain Services]
-        Matching[pet-matching-service Java + Spring Boot]
-        Search[pet-search-service Java + Spring Boot]
+        Matching["pet-matching-service<br/>Java + Spring Boot"]
+        Search["pet-search-service<br/>Java + Spring Boot"]
     end
 
     subgraph AIBlock[AI Services]
-        AIService[pet-augmentation-service (Optional)]
+        AIService["pet-augmentation-service<br/>(Optional)"]
     end
 
-    ProfileDB[(PostgreSQL (RDS))]
+    ProfileDB[(PostgreSQL RDS)]
     MatchingDB[(DynamoDB)]
     SearchDB[(OpenSearch)]
 
-    AIProvider[AI Provider (Bedrock / LLM)]
+    AIProvider["AI Provider<br/>(Bedrock / LLM)"]
 
     Gateway --> Profile
     Gateway --> Matching
