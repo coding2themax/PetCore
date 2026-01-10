@@ -44,6 +44,9 @@ flowchart TB
     subgraph BE["PetCore Backend
         Java 17 + Spring Boot
         Modular Monolith"]
+
+
+
         Profile["Pet Profile Module
         - Pets & Shelters
         - Intake Records"]
