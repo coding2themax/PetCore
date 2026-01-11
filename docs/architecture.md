@@ -11,7 +11,7 @@ flowchart LR
         Profile[profile<br/>Pet Profiles]
         Matching[matching<br/>Rule-Based Matching]
         Search[search<br/>Search & Discovery]
-        Augmentation[augmentation<br/>AI (Optional)]
+        Augmentation["augmentation<br/>AI (Optional)"]
         Security[security]
         Config[config]
         Observability[observability]
