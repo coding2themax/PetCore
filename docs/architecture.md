@@ -6,37 +6,37 @@
 
 ```mermaid
 flowchart LR
-subgraph PetCore["PetCore (Spring Boot Modular Monolith)"]
-API[api<br/>Controllers & Routing]
-Profile[profile<br/>Pet Profiles]
-Matching[matching<br/>Rule-Based Matching]
-Search[search<br/>Search & Discovery]
-Augmentation[augmentation<br/>AI (Optional)]
-Security[security]
-Config[config]
-Observability[observability]
-end
+    subgraph PetCore["PetCore (Spring Boot Modular Monolith)"]
+        API[api<br/>Controllers & Routing]
+        Profile[profile<br/>Pet Profiles]
+        Matching[matching<br/>Rule-Based Matching]
+        Search[search<br/>Search & Discovery]
+        Augmentation[augmentation<br/>AI (Optional)]
+        Security[security]
+        Config[config]
+        Observability[observability]
 
-    API --> Profile
-    API --> Matching
-    API --> Search
-    API --> Augmentation
+        API --> Profile
+        API --> Matching
+        API --> Search
+        API --> Augmentation
 
-    Matching --> Profile
-    Search --> Profile
+        Matching --> Profile
+        Search --> Profile
 
-    Augmentation -. Optional .-> Matching
-    Augmentation -. Optional .-> Search
+        Augmentation -. Optional .-> Matching
+        Augmentation -. Optional .-> Search
 
-    Profile --> Config
-    Matching --> Config
-    Search --> Config
-    Augmentation --> Config
+        Profile --> Config
+        Matching --> Config
+        Search --> Config
+        Augmentation --> Config
 
-    API --> Security
-    Profile --> Observability
-    Matching --> Observability
-    Search --> Observability
+        API --> Security
+        Profile --> Observability
+        Matching --> Observability
+        Search --> Observability
+    end
 ```
 
 ## Internal Structure of a Domain Module
