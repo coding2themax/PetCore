@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/coding2themax/PetCore
+    about: Please review the README and ADRs before opening an issue.
