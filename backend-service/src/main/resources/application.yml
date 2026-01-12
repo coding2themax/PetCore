@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: pet-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/petcore
+    username: petcore_user
+    password: petcore_pass
+  sql:
+    init:
+      mode: always
