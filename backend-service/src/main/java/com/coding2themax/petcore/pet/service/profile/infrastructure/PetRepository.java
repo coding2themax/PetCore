@@ -1,8 +1,9 @@
 package com.coding2themax.petcore.pet.service.profile.infrastructure;
 
-import com.coding2themax.petcore.pet.service.profile.domain.Pet;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
+
+import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
 
 import java.util.UUID;
 

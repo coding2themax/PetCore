@@ -1,8 +1,9 @@
 package com.coding2themax.petcore.pet.service.profile.api;
 
-import com.coding2themax.petcore.pet.service.profile.application.PetIntakeRequest;
-import com.coding2themax.petcore.pet.service.profile.application.PetIntakeService;
-import com.coding2themax.petcore.pet.service.profile.domain.Pet;
+import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
+import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
+import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

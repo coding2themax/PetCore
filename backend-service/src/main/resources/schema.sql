@@ -9,5 +9,8 @@ CREATE TABLE IF NOT EXISTS pets (
     size VARCHAR(50) NOT NULL,
     intake_date DATE NOT NULL,
     intake_type VARCHAR(50) NOT NULL,
-    status VARCHAR(50) NOT NULL
+    status VARCHAR(50) NOT NULL,
+    external_reference_id VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(external_reference_id)
 );

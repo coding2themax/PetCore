@@ -1,8 +1,10 @@
-package com.coding2themax.petcore.pet.service.profile.domain;
+package com.coding2themax.petcore.pet.service.profile.api.domain.model;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -21,13 +23,18 @@ public class Pet {
   private LocalDate intakeDate;
   private IntakeType intakeType;
   private PetStatus status;
+  private String externalReferenceId;
+
+  @CreatedDate
+  private Instant createdAt;
 
   // Default constructor for Spring Data
   public Pet() {
   }
 
   public Pet(String name, Species species, String breed, Sex sex, Age age,
-      Size size, LocalDate intakeDate, IntakeType intakeType, PetStatus status) {
+      Size size, LocalDate intakeDate, IntakeType intakeType, PetStatus status,
+      String externalReferenceId) {
     this.id = UUID.randomUUID();
     this.name = name;
     this.species = species;
@@ -39,6 +46,7 @@ public class Pet {
     this.intakeDate = intakeDate;
     this.intakeType = intakeType;
     this.status = status;
+    this.externalReferenceId = externalReferenceId;
   }
 
   public UUID getId() {
@@ -120,5 +128,21 @@ public class Pet {
 
   public void setStatus(PetStatus status) {
     this.status = status;
+  }
+
+  public String getExternalReferenceId() {
+    return externalReferenceId;
+  }
+
+  public void setExternalReferenceId(String externalReferenceId) {
+    this.externalReferenceId = externalReferenceId;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
   }
 }

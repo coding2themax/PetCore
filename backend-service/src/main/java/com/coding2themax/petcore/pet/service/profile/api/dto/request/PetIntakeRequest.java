@@ -1,4 +1,4 @@
-package com.coding2themax.petcore.pet.service.profile.api;
+package com.coding2themax.petcore.pet.service.profile.api.dto.request;
 
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Age;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.IntakeType;
@@ -8,17 +8,16 @@ import com.coding2themax.petcore.pet.service.profile.api.domain.model.Size;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Species;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-public record PetIntakeResponse(
-                UUID petId,
-                String name,
-                Species species,
-                String breed,
-                Sex sex,
-                Age age,
-                Size size,
-                LocalDate intakeDate,
-                IntakeType intakeType,
-                PetStatus status) {
+public record PetIntakeRequest(
+    String name,
+    Species species,
+    String breed,
+    Sex sex,
+    Age age,
+    Size size,
+    LocalDate intakeDate,
+    IntakeType intakeType,
+    PetStatus status,
+    String externalReferenceId) {
 }
