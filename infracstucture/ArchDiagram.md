@@ -94,6 +94,60 @@ flowchart TB
 
 ## Service Interaction Flows
 
+### Pet Intake Flow
+
+Purpose: Demonstrate end-to-end pet intake process with validation and persistence
+
+```mermaid
+sequenceDiagram
+    participant Staff as Shelter Staff
+    participant FE as React SPA
+    participant GW as API Gateway
+    participant Auth as Security Module
+    participant API as API Controller
+    participant Profile as Profile Module
+    participant DB as PostgreSQL (RDS)
+    participant Obs as Observability
+
+    Staff ->> FE: Fill out pet intake form
+    Staff ->> FE: Submit intake request
+
+    FE ->> GW: POST /api/pets/intake<br/>{petData, shelterId}
+    GW ->> Auth: Validate JWT token
+    Auth -->> GW: Authenticated user
+
+    GW ->> API: Forward intake request
+    API ->> Obs: Log intake attempt
+
+    API ->> API: Validate request payload
+
+    alt Validation fails
+        API -->> GW: 400 Bad Request<br/>Validation errors
+        GW -->> FE: Error response
+        FE -->> Staff: Show validation errors
+    else Validation succeeds
+        API ->> Profile: Create pet profile
+        Profile ->> Profile: Generate unique pet ID
+        Profile ->> Profile: Apply business rules
+
+        Profile ->> DB: INSERT INTO pets
+        DB -->> Profile: Persisted record
+
+        Profile ->> DB: INSERT INTO intake_records
+        DB -->> Profile: Intake record saved
+
+        Profile -->> API: Pet profile created
+        API ->> Obs: Log successful intake
+
+        API -->> GW: 201 Created<br/>{petId, profile}
+        GW -->> FE: Success response
+        FE -->> Staff: Show confirmation<br/>Display pet ID
+    end
+
+    Note over Staff,Obs: System operates fully without AI dependency
+
+```
+
 ### Pet Profile Creation
 
 ```mermaid

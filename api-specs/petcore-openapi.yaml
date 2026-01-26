@@ -1,0 +1,192 @@
+openapi: 3.0.3
+info:
+  title: PetCore Backend API
+  description: >
+    Backend API for managing pet intake and profiles.
+    Designed as a modular monolith with clear domain boundaries.
+  version: 1.0.0
+  contact:
+    name: PetCore Project
+  license:
+    name: MIT
+
+servers:
+  - url: https://api.petcore.local/v1
+    description: Local / Development
+  - url: https://api.petcore.io/v1
+    description: Production
+
+tags:
+  - name: Pet Intake
+    description: Pet intake and profile creation
+  - name: Pet Profiles
+    description: Retrieval and management of pet profiles
+
+paths:
+  /pets:
+    post:
+      tags:
+        - Pet Intake
+      summary: Create a new pet intake record
+      operationId: createPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PetIntakeRequest"
+      responses:
+        "201":
+          description: Pet profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      tags:
+        - Pet Profiles
+      summary: Search pet profiles
+      operationId: searchPets
+      parameters:
+        - name: species
+          in: query
+          schema:
+            type: string
+            enum: [DOG, CAT]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [AVAILABLE, ADOPTED, HOLD]
+      responses:
+        "200":
+          description: List of pet profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PetResponse"
+
+  /pets/{petId}:
+    get:
+      tags:
+        - Pet Profiles
+      summary: Retrieve a pet profile by ID
+      operationId: getPetById
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Pet profile found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetResponse"
+        "404":
+          description: Pet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    PetIntakeRequest:
+      type: object
+      required:
+        - name
+        - species
+        - sex
+        - age
+        - intakeDate
+        - intakeType
+        - status
+      properties:
+        name:
+          type: string
+          example: Luna
+        species:
+          type: string
+          enum: [DOG, CAT]
+        breed:
+          type: string
+          example: Labrador Retriever
+        sex:
+          type: string
+          enum: [MALE, FEMALE]
+        age:
+          $ref: "#/components/schemas/Age"
+        size:
+          type: string
+          enum: [SMALL, MEDIUM, LARGE]
+        intakeDate:
+          type: string
+          format: date
+        intakeType:
+          type: string
+          enum: [STRAY, OWNER_SURRENDER, TRANSFER]
+        status:
+          type: string
+          enum: [AVAILABLE, HOLD]
+        externalReferenceId:
+          type: string
+          description: Used for idempotent intake
+
+    Age:
+      type: object
+      required:
+        - value
+        - unit
+      properties:
+        value:
+          type: integer
+          minimum: 0
+        unit:
+          type: string
+          enum: [MONTHS, YEARS]
+
+    PetResponse:
+      type: object
+      properties:
+        petId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        species:
+          type: string
+        breed:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
