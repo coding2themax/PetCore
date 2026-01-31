@@ -1,4 +1,4 @@
-package com.coding2themax.petcore.pet.service.profile.api;
+package com.coding2themax.petcore.pet.service.profile.api.handler;
 
 import java.time.Instant;
 
@@ -7,9 +7,9 @@ import java.time.Instant;
  * Used for consistent error reporting across the API.
  */
 public record ErrorResponse(
-    Instant timestamp,
-    int status,
-    String error,
-    String message,
-    String path) {
+        Instant timestamp,
+        int status,
+        String error,
+        String message,
+        String path) {
 }

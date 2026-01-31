@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
 import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeService;
@@ -25,7 +24,7 @@ public class PetIntakeHandler {
     Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class);
     // Implementation for handling pet intake
 
-    petMono.flatMap(petIntakeService::createPetProfile).flatMap(createdPet -> {
+    Mono<PetResponse> pr = petMono.flatMap(petIntakeService::createPetProfile).flatMap(createdPet -> {
       // Additional processing if needed
       PetResponse petResponse = new PetResponse(createdPet.getId(),
           createdPet.getName(),
@@ -36,6 +35,6 @@ public class PetIntakeHandler {
       return Mono.just(petResponse);
     });
 
-    return ServerResponse.ok().body(petMono, Pet.class);
+    return ServerResponse.ok().body(pr, PetResponse.class);
   }
 }
