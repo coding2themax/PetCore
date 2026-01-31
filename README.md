@@ -2,6 +2,8 @@
 
 [![codecov](https://codecov.io/github/coding2themax/PetCore/branch/22-feature-code-coverage/graph/badge.svg)](https://codecov.io/github/coding2themax/PetCore)
 
+![GitHub License](https://img.shields.io/github/license/coding2themax/PetCore)
+
 **PetCore** is a domain-driven monolithic application for managing pet intake, profiles, matching, and search using large public datasets from animal shelters and animal welfare organizations.
 
 The application is intentionally designed as a **modular monolith**: core business logic is centralized, well-bounded, and fully functional **without AI**, while remaining easy to evolve into independently deployable microservices as scaling, performance, or change frequency demands increase.
