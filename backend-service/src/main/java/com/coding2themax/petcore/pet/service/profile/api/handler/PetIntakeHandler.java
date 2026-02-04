@@ -1,5 +1,7 @@
 package com.coding2themax.petcore.pet.service.profile.api.handler;
 
+import java.util.logging.Logger;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -13,6 +15,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class PetIntakeHandler {
 
+  private static final Logger LOGGER = Logger.getLogger(PetIntakeHandler.class.getName());
+
   private final PetIntakeService petIntakeService;
 
   public PetIntakeHandler(PetIntakeService petIntakeService) {
@@ -23,18 +27,18 @@ public class PetIntakeHandler {
 
     Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class);
     // Implementation for handling pet intake
+    LOGGER.info("Handling pet intake request");
 
-    Mono<PetResponse> pr = petMono.flatMap(petIntakeService::createPetProfile).flatMap(createdPet -> {
-      // Additional processing if needed
-      PetResponse petResponse = new PetResponse(createdPet.getId(),
-          createdPet.getName(),
-          createdPet.getSpecies().toString(),
-          createdPet.getBreed(),
-          createdPet.getStatus().toString(),
-          createdPet.getCreatedAt());
-      return Mono.just(petResponse);
-    });
+    Mono<PetResponse> pr = petMono.flatMap(petIntakeService::createPetProfile);
 
     return ServerResponse.ok().body(pr, PetResponse.class);
+  }
+
+  public Mono<ServerResponse> handleGetPets(ServerRequest request) {
+    // Implementation for handling get pets request
+    LOGGER.info("Handling get pets request");
+
+    // Placeholder response
+    return ServerResponse.ok().body(Mono.just("Get Pets Endpoint"), String.class);
   }
 }

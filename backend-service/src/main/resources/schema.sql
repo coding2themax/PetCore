@@ -1,4 +1,8 @@
-CREATE TABLE IF NOT EXISTS pets (
+-- Create custom schema for PetCore
+CREATE SCHEMA IF NOT EXISTS petcore;
+
+-- Create pets table in the petcore schema
+CREATE TABLE IF NOT EXISTS petcore.pets (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     species VARCHAR(50) NOT NULL,

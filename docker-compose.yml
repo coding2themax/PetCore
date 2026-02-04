@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:17
     container_name: petcore-postgres
     env_file:
       - .env
@@ -39,7 +39,11 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"' || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          'wget -qO- http://localhost:8080/actuator/health | grep -q ''"status":"UP"'' || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
