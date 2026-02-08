@@ -75,8 +75,16 @@ public class PetIntakeHandlerTest {
     mockPet.setStatus(PetStatus.AVAILABLE);
     mockPet.setCreatedAt(expectedCreatedAt);
 
+    PetResponse petResponse = new PetResponse(
+        mockPet.getId(),
+        mockPet.getName(),
+        mockPet.getSpecies().toString(),
+        mockPet.getBreed(),
+        mockPet.getStatus().toString(),
+        mockPet.getCreatedAt());
+
     BDDMockito.when(petIntakeService.createPetProfile(any(PetIntakeRequest.class)))
-        .thenReturn(Mono.just(mockPet));
+        .thenReturn(Mono.just(petResponse));
 
     // When: POST request to intake endpoint
     // Then: returns 200 OK with PetResponse body
@@ -86,13 +94,13 @@ public class PetIntakeHandlerTest {
         .exchange()
         .expectStatus().isOk()
         .expectBody(PetResponse.class)
-        .value(petResponse -> {
-          assertThat(petResponse.petId()).isEqualTo(expectedId);
-          assertThat(petResponse.name()).isEqualTo("Buddy");
-          assertThat(petResponse.species()).isEqualTo("DOG");
-          assertThat(petResponse.breed()).isEqualTo("Labrador");
-          assertThat(petResponse.status()).isEqualTo("AVAILABLE");
-          assertThat(petResponse.createdAt()).isEqualTo(expectedCreatedAt);
+        .value(petResponseDTO -> {
+          assertThat(petResponseDTO.petId()).isEqualTo(expectedId);
+          assertThat(petResponseDTO.name()).isEqualTo("Buddy");
+          assertThat(petResponseDTO.species()).isEqualTo("DOG");
+          assertThat(petResponseDTO.breed()).isEqualTo("Labrador");
+          assertThat(petResponseDTO.status()).isEqualTo("AVAILABLE");
+          assertThat(petResponseDTO.createdAt()).isEqualTo(expectedCreatedAt);
         });
 
     // Verify service was called
