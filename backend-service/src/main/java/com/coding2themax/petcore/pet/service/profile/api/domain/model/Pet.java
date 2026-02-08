@@ -2,14 +2,16 @@ package com.coding2themax.petcore.pet.service.profile.api.domain.model;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Table("pets")
-public class Pet {
+@Table(value = "pets", schema = "petcore")
+public class Pet implements Persistable<UUID> {
 
   @Id
   private UUID id;
@@ -25,29 +27,11 @@ public class Pet {
   private PetStatus status;
   private String externalReferenceId;
 
+  @Transient
+  private boolean isNewPet;
+
   @CreatedDate
   private Instant createdAt;
-
-  // Default constructor for Spring Data
-  public Pet() {
-  }
-
-  public Pet(String name, Species species, String breed, Sex sex, Age age,
-      Size size, LocalDate intakeDate, IntakeType intakeType, PetStatus status,
-      String externalReferenceId) {
-    this.id = UUID.randomUUID();
-    this.name = name;
-    this.species = species;
-    this.breed = breed;
-    this.sex = sex;
-    this.ageValue = age.value();
-    this.ageUnit = age.unit();
-    this.size = size;
-    this.intakeDate = intakeDate;
-    this.intakeType = intakeType;
-    this.status = status;
-    this.externalReferenceId = externalReferenceId;
-  }
 
   public UUID getId() {
     return id;
@@ -144,5 +128,15 @@ public class Pet {
 
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
+  }
+
+  @Override
+  public boolean isNew() {
+    return isNewPet || id == null;
+  }
+
+  public Pet setAsNewPet() {
+    this.isNewPet = true;
+    return this;
   }
 }

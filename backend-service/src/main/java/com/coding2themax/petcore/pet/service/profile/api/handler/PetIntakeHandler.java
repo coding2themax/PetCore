@@ -26,12 +26,22 @@ public class PetIntakeHandler {
   public Mono<ServerResponse> handleIntake(ServerRequest request) {
 
     Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class);
-    // Implementation for handling pet intake
     LOGGER.info("Handling pet intake request");
 
-    Mono<PetResponse> pr = petMono.flatMap(petIntakeService::createPetProfile);
+    return petMono.flatMap(petRequest -> {
+      return petIntakeService.createPetProfile(petRequest)
+          .flatMap(createdPet -> {
+            PetResponse response = new PetResponse(
+                createdPet.petId(),
+                createdPet.name(),
+                createdPet.species(),
+                createdPet.breed(),
+                createdPet.status(),
+                createdPet.createdAt());
+            return ServerResponse.ok().bodyValue(response);
+          });
+    });
 
-    return ServerResponse.ok().body(pr, PetResponse.class);
   }
 
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {

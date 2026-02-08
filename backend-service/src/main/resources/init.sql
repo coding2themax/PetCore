@@ -1,6 +1,6 @@
 -- Initial pet data for PetCore system
 
-INSERT INTO pets (id, name, species, breed, sex, age_value, age_unit, size, intake_date, intake_type, status, external_reference_id) VALUES
+INSERT INTO petcore.pets (id, name, species, breed, sex, age_value, age_unit, size, intake_date, intake_type, status, external_reference_id) VALUES
 (gen_random_uuid(), 'Max', 'Dog', 'Golden Retriever', 'Male', 3, 'Years', 'Large', '2025-11-15', 'Stray', 'Available', 'EXT-DOG-001'),
 (gen_random_uuid(), 'Luna', 'Cat', 'Domestic Shorthair', 'Female', 2, 'Years', 'Small', '2025-12-01', 'Owner Surrender', 'Available', 'EXT-CAT-001'),
 (gen_random_uuid(), 'Buddy', 'Dog', 'Labrador Mix', 'Male', 5, 'Years', 'Large', '2025-10-20', 'Stray', 'Available', 'EXT-DOG-002'),
