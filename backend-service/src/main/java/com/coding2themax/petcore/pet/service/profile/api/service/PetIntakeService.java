@@ -10,4 +10,6 @@ public interface PetIntakeService {
 
   Mono<PetResponse> createPetProfile(PetIntakeRequest request);
 
+  Mono<Pet> getPetById(String petId);
+
 }

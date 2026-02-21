@@ -112,12 +112,12 @@ sequenceDiagram
     Staff ->> FE: Fill out pet intake form
     Staff ->> FE: Submit intake request
 
-    FE ->> GW: POST /api/pets/intake<br/>{petData, shelterId}
+    FE ->> GW: POST /api/pets<br/>{petData, shelterId}
     GW ->> Auth: Validate JWT token
     Auth -->> GW: Authenticated user
 
     GW ->> API: Forward intake request
-    API ->> Obs: Log intake attempt
+    API ->> Obs: Log intake attemp
 
     API ->> API: Validate request payload
 

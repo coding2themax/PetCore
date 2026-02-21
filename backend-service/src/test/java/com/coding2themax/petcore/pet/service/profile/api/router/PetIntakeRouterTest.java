@@ -23,7 +23,7 @@ public class PetIntakeRouterTest {
   void testRoute500() {
 
     webTestClient.post()
-        .uri("/api/v1/pets/intake")
+        .uri("/api/v1/pets")
         .exchange()
         .expectStatus().is5xxServerError();
 

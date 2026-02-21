@@ -89,7 +89,7 @@ public class PetIntakeHandlerTest {
     // When: POST request to intake endpoint
     // Then: returns 200 OK with PetResponse body
     webTestClient.post()
-        .uri("/api/v1/pets/intake")
+        .uri("/api/v1/pets")
         .bodyValue(petIntakeRequest)
         .exchange()
         .expectStatus().isOk()

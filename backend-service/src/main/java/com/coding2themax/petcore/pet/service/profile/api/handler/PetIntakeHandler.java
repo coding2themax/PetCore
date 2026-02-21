@@ -44,11 +44,20 @@ public class PetIntakeHandler {
 
   }
 
+  public Mono<ServerResponse> handleGetPetById(ServerRequest request) {
+    // Implementation for handling get pet by id request
+    String petId = request.pathVariable("id");
+    LOGGER.info("Handling get pet by id request for petId: " + petId);
+
+    // Placeholder response
+    return ServerResponse.ok().body(Mono.just("Get Pet By ID Endpoint for petId: " + petId), String.class);
+  }
+
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {
     // Implementation for handling get pets request
     LOGGER.info("Handling get pets request");
 
-    // Placeholder response
+    // Placeholder responsex
     return ServerResponse.ok().body(Mono.just("Get Pets Endpoint"), String.class);
   }
 }

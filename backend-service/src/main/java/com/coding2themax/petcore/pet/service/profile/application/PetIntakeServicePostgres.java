@@ -52,4 +52,11 @@ public class PetIntakeServicePostgres implements PetIntakeService {
         .doOnSuccess(savedPet -> LOGGER.info("Pet profile created with ID: " + savedPet.petId()))
         .doOnError(error -> LOGGER.severe("Error creating pet profile: " + error.getMessage()));
   }
+
+  @Override
+  public Mono<Pet> getPetById(String petId) {
+    return petRepository.findById(UUID.fromString(petId))
+        .doOnSuccess(pet -> LOGGER.info("Retrieved pet profile with ID: " + petId))
+        .doOnError(error -> LOGGER.severe("Error retrieving pet profile with ID " + petId + ": " + error.getMessage()));
+  }
 }
