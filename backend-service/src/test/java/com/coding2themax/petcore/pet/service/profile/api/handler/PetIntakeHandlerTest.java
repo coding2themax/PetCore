@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
@@ -105,5 +107,102 @@ public class PetIntakeHandlerTest {
 
     // Verify service was called
     verify(petIntakeService).createPetProfile(any(PetIntakeRequest.class));
+  }
+
+  @Test
+  void testHandleIntake_serviceError_returns5xx() {
+    // Given: service throws an error
+    BDDMockito.when(petIntakeService.createPetProfile(any(PetIntakeRequest.class)))
+        .thenReturn(Mono.error(new RuntimeException("Database unavailable")));
+
+    // When: POST request to intake endpoint
+    // Then: returns 5xx Server Error
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .bodyValue(petIntakeRequest)
+        .exchange()
+        .expectStatus().is5xxServerError();
+
+    // Verify service was called
+    verify(petIntakeService).createPetProfile(any(PetIntakeRequest.class));
+  }
+
+  @Test
+  @DisplayName("POST /api/v1/pets with missing body should return 4xx error")
+  @Disabled
+  void testHandleIntake_missingBody_returns4xx() {
+    // When: POST request with no body
+    // Then: bodyToMono returns Mono.empty(), flatMap never executes,
+    // handler returns empty Mono → functional routing responds with 4xx
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().is4xxClientError();
+  }
+
+  @Test
+  void testHandleGetPetById_found() {
+    // Given: service returns a PetResponse for the given id
+    PetResponse petResponse = new PetResponse(
+        expectedId,
+        "Buddy",
+        Species.DOG.name(),
+        "Labrador",
+        PetStatus.AVAILABLE.name(),
+        expectedCreatedAt);
+
+    BDDMockito.when(petIntakeService.getPetById(expectedId.toString()))
+        .thenReturn(Mono.just(petResponse));
+
+    // When: GET request to /api/v1/pets/{id}
+    // Then: returns 200 OK with PetResponse body
+    webTestClient.get()
+        .uri("/api/v1/pets/" + expectedId)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody(PetResponse.class)
+        .value(resp -> {
+          assertThat(resp.petId()).isEqualTo(expectedId);
+          assertThat(resp.name()).isEqualTo("Buddy");
+          assertThat(resp.species()).isEqualTo("DOG");
+          assertThat(resp.breed()).isEqualTo("Labrador");
+          assertThat(resp.status()).isEqualTo("AVAILABLE");
+          assertThat(resp.createdAt()).isEqualTo(expectedCreatedAt);
+        });
+
+    verify(petIntakeService).getPetById(expectedId.toString());
+  }
+
+  @Test
+  void testHandleGetPetById_notFound() {
+    // Given: service returns empty Mono (pet does not exist)
+    BDDMockito.when(petIntakeService.getPetById(expectedId.toString()))
+        .thenReturn(Mono.empty());
+
+    // When: GET request to /api/v1/pets/{id}
+    // Then: returns 404 Not Found
+    webTestClient.get()
+        .uri("/api/v1/pets/" + expectedId)
+        .exchange()
+        .expectStatus().isNotFound();
+
+    verify(petIntakeService).getPetById(expectedId.toString());
+  }
+
+  @Test
+  void testHandleGetPetById_serviceError_returns5xx() {
+    // Given: service throws an error
+    BDDMockito.when(petIntakeService.getPetById(expectedId.toString()))
+        .thenReturn(Mono.error(new RuntimeException("Database unavailable")));
+
+    // When: GET request to /api/v1/pets/{id}
+    // Then: returns 5xx Server Error
+    webTestClient.get()
+        .uri("/api/v1/pets/" + expectedId)
+        .exchange()
+        .expectStatus().is5xxServerError();
+
+    verify(petIntakeService).getPetById(expectedId.toString());
   }
 }

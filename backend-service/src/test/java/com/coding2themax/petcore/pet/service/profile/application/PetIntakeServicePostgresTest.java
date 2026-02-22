@@ -21,6 +21,7 @@ import com.coding2themax.petcore.pet.service.profile.api.domain.model.Sex;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Size;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Species;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
+import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
 import reactor.core.publisher.Mono;
@@ -107,18 +108,14 @@ public class PetIntakeServicePostgresTest {
         .thenReturn(Mono.just(stored));
 
     StepVerifier.create(petIntakeServicePostgres.getPetById(id.toString()))
-        .assertNext(pet -> {
+        .assertNext((PetResponse resp) -> {
           Assertions.assertAll(
-              () -> Assertions.assertEquals(id, pet.getId()),
-              () -> Assertions.assertEquals("Buddy", pet.getName()),
-              () -> Assertions.assertEquals(Species.DOG, pet.getSpecies()),
-              () -> Assertions.assertEquals("Golden Retriever", pet.getBreed()),
-              () -> Assertions.assertEquals(Sex.MALE, pet.getSex()),
-              () -> Assertions.assertEquals(new Age(3, AgeUnit.YEARS), pet.getAge()),
-              () -> Assertions.assertEquals(Size.LARGE, pet.getSize()),
-              () -> Assertions.assertEquals(IntakeType.STRAY, pet.getIntakeType()),
-              () -> Assertions.assertEquals(PetStatus.AVAILABLE, pet.getStatus()),
-              () -> Assertions.assertEquals(createdAt, pet.getCreatedAt()));
+              () -> Assertions.assertEquals(id, resp.petId()),
+              () -> Assertions.assertEquals("Buddy", resp.name()),
+              () -> Assertions.assertEquals(Species.DOG.name(), resp.species()),
+              () -> Assertions.assertEquals("Golden Retriever", resp.breed()),
+              () -> Assertions.assertEquals(PetStatus.AVAILABLE.name(), resp.status()),
+              () -> Assertions.assertEquals(createdAt, resp.createdAt()));
         })
         .verifyComplete();
 

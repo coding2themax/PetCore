@@ -54,8 +54,15 @@ public class PetIntakeServicePostgres implements PetIntakeService {
   }
 
   @Override
-  public Mono<Pet> getPetById(String petId) {
+  public Mono<PetResponse> getPetById(String petId) {
     return petRepository.findById(UUID.fromString(petId))
+        .map(pet -> new PetResponse(
+            pet.getId(),
+            pet.getName(),
+            pet.getSpecies().toString(),
+            pet.getBreed(),
+            pet.getStatus().toString(),
+            pet.getCreatedAt()))
         .doOnSuccess(pet -> LOGGER.info("Retrieved pet profile with ID: " + petId))
         .doOnError(error -> LOGGER.severe("Error retrieving pet profile with ID " + petId + ": " + error.getMessage()));
   }

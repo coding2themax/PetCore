@@ -50,7 +50,20 @@ public class PetIntakeHandler {
     LOGGER.info("Handling get pet by id request for petId: " + petId);
 
     // Placeholder response
-    return ServerResponse.ok().body(Mono.just("Get Pet By ID Endpoint for petId: " + petId), String.class);
+    // return ServerResponse.ok().body(Mono.just("Get Pet By ID Endpoint for petId:
+    // " + petId), String.class);
+    return petIntakeService.getPetById(petId)
+        .flatMap(pet -> {
+          PetResponse response = new PetResponse(
+              pet.petId(),
+              pet.name(),
+              pet.species(),
+              pet.breed(),
+              pet.status(),
+              pet.createdAt());
+          return ServerResponse.ok().bodyValue(response);
+        })
+        .switchIfEmpty(ServerResponse.notFound().build());
   }
 
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {
