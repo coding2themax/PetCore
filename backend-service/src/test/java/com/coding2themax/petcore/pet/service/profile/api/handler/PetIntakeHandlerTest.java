@@ -180,6 +180,38 @@ public class PetIntakeHandlerTest {
   }
 
   @Test
+  @DisplayName("POST /api/v1/pets with no body returns 400")
+  void testHandleIntake_missingBody_returns400() {
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isBadRequest();
+  }
+
+  @Test
+  @DisplayName("POST /api/v1/pets with missing name returns 400")
+  void testHandleIntake_missingName_returns400() {
+    PetIntakeRequest missingName = new PetIntakeRequest(
+        null,
+        Species.DOG,
+        "Labrador",
+        Sex.MALE,
+        new Age(3, AgeUnit.YEARS),
+        Size.LARGE,
+        LocalDate.now(),
+        IntakeType.OWNER_SURRENDER,
+        PetStatus.AVAILABLE,
+        "EXT-123");
+
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .bodyValue(missingName)
+        .exchange()
+        .expectStatus().isBadRequest();
+  }
+
+  @Test
   void testHandleGetPetById_serviceError_returns5xx() {
     // Given: service throws an error
     BDDMockito.when(petIntakeService.getPetById(expectedId.toString()))

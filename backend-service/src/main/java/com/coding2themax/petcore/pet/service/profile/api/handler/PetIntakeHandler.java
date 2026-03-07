@@ -33,14 +33,16 @@ public class PetIntakeHandler {
 
   public Mono<ServerResponse> handleIntake(ServerRequest request) {
 
-    Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class).map(body -> {
-      Errors errors = new BeanPropertyBindingResult(body, "petIntakeRequest");
-      validator.validate(body, errors);
-      if (errors.hasErrors()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pet intake request");
-      }
-      return body;
-    });
+    Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class)
+        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required")))
+        .map(body -> {
+          Errors errors = new BeanPropertyBindingResult(body, "petIntakeRequest");
+          validator.validate(body, errors);
+          if (errors.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pet intake request");
+          }
+          return body;
+        });
     LOGGER.info("Handling pet intake request");
 
     return petMono.flatMap(petRequest -> {

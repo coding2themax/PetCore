@@ -79,15 +79,29 @@ public class PetIntakeRouterTest {
   }
 
   @Test
-  @DisplayName("POST /api/v1/pets with missing body should return 4xx error")
+  @DisplayName("POST /api/v1/pets with missing body should return 400 Bad Request")
   void testHandleIntake_missingBody_returns4xx() {
-    // When: POST request with no body
-    // Then: bodyToMono returns Mono.empty(), flatMap never executes,
-    // handler returns empty Mono → functional routing responds with 4xx
+    BDDMockito.given(handler.handleIntake(ArgumentMatchers.any()))
+        .willReturn(ServerResponse.badRequest().build());
+
     webTestClient.post()
         .uri("/api/v1/pets")
-        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
         .exchange()
-        .expectStatus().is4xxClientError();
+        .expectStatus().isBadRequest();
+  }
+
+  @Test
+  @DisplayName("POST /api/v1/pets with missing name should return 400 Bad Request")
+  void testHandleIntake_missingName_returns400() {
+    BDDMockito.given(handler.handleIntake(ArgumentMatchers.any()))
+        .willReturn(ServerResponse.badRequest().build());
+
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue("{\"species\":\"DOG\",\"breed\":\"Golden Retriever\",\"status\":\"AVAILABLE\"}")
+        .exchange()
+        .expectStatus().isBadRequest();
   }
 }
