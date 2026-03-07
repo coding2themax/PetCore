@@ -1,15 +1,14 @@
 package com.coding2themax.petcore.pet.service.profile.api.handler;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

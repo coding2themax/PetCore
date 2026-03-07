@@ -3,7 +3,6 @@ package com.coding2themax.petcore.pet.service.profile.application;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
