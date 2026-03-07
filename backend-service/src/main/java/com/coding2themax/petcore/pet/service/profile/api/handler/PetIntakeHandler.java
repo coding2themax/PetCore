@@ -2,9 +2,14 @@ package com.coding2themax.petcore.pet.service.profile.api.handler;
 
 import java.util.logging.Logger;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
@@ -19,13 +24,23 @@ public class PetIntakeHandler {
 
   private final PetIntakeService petIntakeService;
 
-  public PetIntakeHandler(PetIntakeService petIntakeService) {
+  private final Validator validator;
+
+  public PetIntakeHandler(PetIntakeService petIntakeService, Validator validator) {
     this.petIntakeService = petIntakeService;
+    this.validator = validator;
   }
 
   public Mono<ServerResponse> handleIntake(ServerRequest request) {
 
-    Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class);
+    Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class).map(body -> {
+      Errors errors = new BeanPropertyBindingResult(body, "petIntakeRequest");
+      validator.validate(body, errors);
+      if (errors.hasErrors()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pet intake request");
+      }
+      return body;
+    });
     LOGGER.info("Handling pet intake request");
 
     return petMono.flatMap(petRequest -> {

@@ -28,6 +28,7 @@ import com.coding2themax.petcore.pet.service.profile.api.domain.model.Size;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Species;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
+import com.coding2themax.petcore.pet.service.profile.api.handler.validator.PetIntakeValidator;
 import com.coding2themax.petcore.pet.service.profile.api.router.PetIntakeRouter;
 import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeService;
 
@@ -39,6 +40,8 @@ public class PetIntakeHandlerTest {
   @Mock
   private PetIntakeService petIntakeService;
 
+  private PetIntakeValidator petIntakeValidator = new PetIntakeValidator();
+
   private WebTestClient webTestClient;
 
   private UUID expectedId;
@@ -46,7 +49,7 @@ public class PetIntakeHandlerTest {
 
   @BeforeEach
   void setUp() {
-    PetIntakeHandler handler = new PetIntakeHandler(petIntakeService);
+    PetIntakeHandler handler = new PetIntakeHandler(petIntakeService, petIntakeValidator);
     PetIntakeRouter router = new PetIntakeRouter();
     webTestClient = WebTestClient.bindToRouterFunction(router.route(handler)).build();
 
@@ -125,20 +128,6 @@ public class PetIntakeHandlerTest {
 
     // Verify service was called
     verify(petIntakeService).createPetProfile(any(PetIntakeRequest.class));
-  }
-
-  @Test
-  @DisplayName("POST /api/v1/pets with missing body should return 4xx error")
-  @Disabled
-  void testHandleIntake_missingBody_returns4xx() {
-    // When: POST request with no body
-    // Then: bodyToMono returns Mono.empty(), flatMap never executes,
-    // handler returns empty Mono → functional routing responds with 4xx
-    webTestClient.post()
-        .uri("/api/v1/pets")
-        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-        .exchange()
-        .expectStatus().is4xxClientError();
   }
 
   @Test

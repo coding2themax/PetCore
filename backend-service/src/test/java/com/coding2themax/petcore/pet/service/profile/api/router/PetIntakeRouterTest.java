@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
@@ -74,5 +76,18 @@ public class PetIntakeRouterTest {
         .accept(MediaType.APPLICATION_JSON)
         .exchange()
         .expectStatus().isNotFound();
+  }
+
+  @Test
+  @DisplayName("POST /api/v1/pets with missing body should return 4xx error")
+  void testHandleIntake_missingBody_returns4xx() {
+    // When: POST request with no body
+    // Then: bodyToMono returns Mono.empty(), flatMap never executes,
+    // handler returns empty Mono → functional routing responds with 4xx
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().is4xxClientError();
   }
 }
