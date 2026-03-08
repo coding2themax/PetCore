@@ -29,23 +29,20 @@ public class PetIntakeServicePostgres implements PetIntakeService {
   @Override
   @Transactional
   public Mono<PetResponse> createPetProfile(PetIntakeRequest request) {
-    if (request.idempotencyKey() != null && !request.idempotencyKey().isBlank()) {
-      return petRepository.findByIdempotencyKey(request.idempotencyKey())
-          .doOnSuccess(existing -> {
-            if (existing != null) {
-              LOGGER.info("Returning existing pet for idempotency key: " + request.idempotencyKey());
-            }
-          })
-          .map(existing -> new PetResponse(
-              existing.getId(),
-              existing.getName(),
-              existing.getSpecies().toString(),
-              existing.getBreed(),
-              existing.getStatus().toString(),
-              existing.getCreatedAt()))
-          .switchIfEmpty(buildAndSave(request));
-    }
-    return buildAndSave(request);
+    return petRepository.findByIdempotencyKey(request.idempotencyKey())
+        .doOnSuccess(existing -> {
+          if (existing != null) {
+            LOGGER.info("Returning existing pet for idempotency key: " + request.idempotencyKey());
+          }
+        })
+        .map(existing -> new PetResponse(
+            existing.getId(),
+            existing.getName(),
+            existing.getSpecies().toString(),
+            existing.getBreed(),
+            existing.getStatus().toString(),
+            existing.getCreatedAt()))
+        .switchIfEmpty(Mono.defer(() -> buildAndSave(request)));
   }
 
   private Mono<PetResponse> buildAndSave(PetIntakeRequest request) {

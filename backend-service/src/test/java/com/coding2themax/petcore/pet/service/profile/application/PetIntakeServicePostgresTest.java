@@ -42,7 +42,7 @@ public class PetIntakeServicePostgresTest {
   private PetIntakeServicePostgres petIntakeServicePostgres;
 
   @Test
-  void testCreatePetProfile() {
+  void testCreatePetProfile_newPet() {
     request = new PetIntakeRequest(
         "Buddy",
         Species.DOG,
@@ -54,7 +54,7 @@ public class PetIntakeServicePostgresTest {
         IntakeType.STRAY,
         PetStatus.AVAILABLE,
         "EXT-12345",
-        null);
+        "IDP-12345");
 
     UUID id = UUID.randomUUID();
     Instant createdAt = Instant.now();
@@ -72,10 +72,12 @@ public class PetIntakeServicePostgresTest {
     saved.setStatus(request.status());
     saved.setCreatedAt(createdAt);
 
+    BDDMockito.when(petRepository.findByIdempotencyKey("IDP-12345"))
+        .thenReturn(Mono.empty());
     BDDMockito.when(petRepository.save(BDDMockito.any()))
         .thenReturn(Mono.just(saved));
-    StepVerifier.create(
-        petIntakeServicePostgres.createPetProfile(request))
+
+    StepVerifier.create(petIntakeServicePostgres.createPetProfile(request))
         .assertNext(resp -> {
           Assertions.assertAll(() -> {
             assert resp.petId().equals(id);
@@ -87,7 +89,51 @@ public class PetIntakeServicePostgresTest {
           });
         })
         .verifyComplete();
+
+    BDDMockito.verify(petRepository).findByIdempotencyKey("IDP-12345");
     BDDMockito.verify(petRepository).save(BDDMockito.any());
+  }
+
+  @Test
+  void testCreatePetProfile_existingPet_returnsExisting() {
+    request = new PetIntakeRequest(
+        "Buddy",
+        Species.DOG,
+        "Golden Retriever",
+        Sex.MALE,
+        new Age(3, AgeUnit.YEARS),
+        Size.LARGE,
+        LocalDate.now(),
+        IntakeType.STRAY,
+        PetStatus.AVAILABLE,
+        "EXT-12345",
+        "IDP-12345");
+
+    UUID existingId = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet existing = new Pet();
+    existing.setId(existingId);
+    existing.setName("Buddy");
+    existing.setSpecies(Species.DOG);
+    existing.setBreed("Golden Retriever");
+    existing.setStatus(PetStatus.AVAILABLE);
+    existing.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findByIdempotencyKey("IDP-12345"))
+        .thenReturn(Mono.just(existing));
+
+    StepVerifier.create(petIntakeServicePostgres.createPetProfile(request))
+        .assertNext(resp -> {
+          Assertions.assertAll(
+              () -> Assertions.assertEquals(existingId, resp.petId()),
+              () -> Assertions.assertEquals("Buddy", resp.name()),
+              () -> Assertions.assertEquals(PetStatus.AVAILABLE.name(), resp.status()));
+        })
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findByIdempotencyKey("IDP-12345");
+    BDDMockito.verify(petRepository, BDDMockito.never()).save(BDDMockito.any());
   }
 
   @Test
