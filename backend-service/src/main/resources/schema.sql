@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS petcore;
 
 -- Create pets table in the petcore schema
 CREATE TABLE IF NOT EXISTS petcore.pets (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     species VARCHAR(50) NOT NULL,
     breed VARCHAR(255),

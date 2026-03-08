@@ -40,7 +40,6 @@ public class PetIntakeServicePostgres implements PetIntakeService {
     pet.setIntakeType(request.intakeType());
     pet.setStatus(request.status());
 
-    pet.setId(UUID.randomUUID());
     pet.setAsNewPet();
 
     return petRepository.save(pet).map(savedPet -> new PetResponse(
