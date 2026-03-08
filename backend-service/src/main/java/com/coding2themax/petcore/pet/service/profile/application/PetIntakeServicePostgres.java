@@ -62,7 +62,7 @@ public class PetIntakeServicePostgres implements PetIntakeService {
             pet.getBreed(),
             pet.getStatus().toString(),
             pet.getCreatedAt()))
-        .doOnSuccess(pet -> LOGGER.info("Retrieved pet profile with ID: " + petId))
+        .doOnSuccess(pet -> LOGGER.info("Retrieved pet profile with ID: " + pet.petId()))
         .doOnError(error -> LOGGER.severe("Error retrieving pet profile with ID " + petId + ": " + error.getMessage()));
   }
 }
