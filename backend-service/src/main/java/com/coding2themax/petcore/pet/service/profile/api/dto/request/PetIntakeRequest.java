@@ -15,14 +15,14 @@ import java.time.LocalDate;
 
 @Valid
 public record PetIntakeRequest(
-        @NotBlank String name,
-        Species species,
-        String breed,
-        Sex sex,
-        Age age,
-        Size size,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") LocalDate intakeDate,
-        IntakeType intakeType,
-        PetStatus status,
-        String externalReferenceId) {
+                @NotBlank String name,
+                Species species,
+                String breed,
+                Sex sex,
+                Age age,
+                Size size,
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") LocalDate intakeDate,
+                IntakeType intakeType,
+                PetStatus status,
+                String externalReferenceId) {
 }
