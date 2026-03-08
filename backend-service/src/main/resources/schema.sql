@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS petcore.pets (
     intake_type VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL,
     external_reference_id VARCHAR(255),
+    idempotency_key VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(external_reference_id)
+    UNIQUE(external_reference_id),
+    UNIQUE(idempotency_key)
 );

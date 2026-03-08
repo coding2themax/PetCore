@@ -29,11 +29,11 @@ public class PetIntakeServicePostgres implements PetIntakeService {
   @Override
   @Transactional
   public Mono<PetResponse> createPetProfile(PetIntakeRequest request) {
-    if (request.externalReferenceId() != null && !request.externalReferenceId().isBlank()) {
-      return petRepository.findByExternalReferenceId(request.externalReferenceId())
+    if (request.idempotencyKey() != null && !request.idempotencyKey().isBlank()) {
+      return petRepository.findByIdempotencyKey(request.idempotencyKey())
           .doOnSuccess(existing -> {
             if (existing != null) {
-              LOGGER.info("Returning existing pet for idempotency key: " + request.externalReferenceId());
+              LOGGER.info("Returning existing pet for idempotency key: " + request.idempotencyKey());
             }
           })
           .map(existing -> new PetResponse(
@@ -60,6 +60,7 @@ public class PetIntakeServicePostgres implements PetIntakeService {
     pet.setIntakeType(request.intakeType());
     pet.setStatus(request.status());
     pet.setExternalReferenceId(request.externalReferenceId());
+    pet.setIdempotencyKey(request.idempotencyKey());
     pet.setAsNewPet();
 
     return petRepository.save(pet)

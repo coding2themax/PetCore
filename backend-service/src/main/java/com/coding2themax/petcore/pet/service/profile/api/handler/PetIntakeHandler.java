@@ -46,7 +46,7 @@ public class PetIntakeHandler {
             return new PetIntakeRequest(
                 body.name(), body.species(), body.breed(), body.sex(), body.age(),
                 body.size(), body.intakeDate(), body.intakeType(), body.status(),
-                idempotencyKey);
+                body.externalReferenceId(), idempotencyKey);
           }
           return body;
         });

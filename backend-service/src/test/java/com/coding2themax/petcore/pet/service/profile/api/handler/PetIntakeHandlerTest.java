@@ -66,7 +66,8 @@ public class PetIntakeHandlerTest {
       LocalDate.now(),
       IntakeType.OWNER_SURRENDER,
       PetStatus.AVAILABLE,
-      "EXT-123");
+      "EXT-123",
+      null);
 
   @Test
   void testHandleIntake() {
@@ -185,7 +186,8 @@ public class PetIntakeHandlerTest {
         LocalDate.now(),
         IntakeType.OWNER_SURRENDER,
         PetStatus.AVAILABLE,
-        "EXT-123");
+        "EXT-123",
+        null);
 
     webTestClient.post()
         .uri("/api/v1/pets")

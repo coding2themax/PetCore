@@ -53,7 +53,8 @@ public class PetIntakeServicePostgresTest {
         LocalDate.now(),
         IntakeType.STRAY,
         PetStatus.AVAILABLE,
-        "EXT-12345");
+        "EXT-12345",
+        null);
 
     UUID id = UUID.randomUUID();
     Instant createdAt = Instant.now();

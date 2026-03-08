@@ -33,6 +33,9 @@ public class Pet implements Persistable<UUID> {
   @Column("external_reference_id")
   private String externalReferenceId;
 
+  @Column("idempotency_key")
+  private String idempotencyKey;
+
   @Transient
   private boolean isNewPet;
 
@@ -127,6 +130,14 @@ public class Pet implements Persistable<UUID> {
 
   public void setExternalReferenceId(String externalReferenceId) {
     this.externalReferenceId = externalReferenceId;
+  }
+
+  public String getIdempotencyKey() {
+    return idempotencyKey;
+  }
+
+  public void setIdempotencyKey(String idempotencyKey) {
+    this.idempotencyKey = idempotencyKey;
   }
 
   public Instant getCreatedAt() {

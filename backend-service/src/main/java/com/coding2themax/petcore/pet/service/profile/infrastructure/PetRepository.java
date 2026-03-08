@@ -14,4 +14,6 @@ public interface PetRepository extends ReactiveCrudRepository<Pet, UUID> {
 
   Mono<Pet> findByExternalReferenceId(String externalReferenceId);
 
+  Mono<Pet> findByIdempotencyKey(String idempotencyKey);
+
 }
