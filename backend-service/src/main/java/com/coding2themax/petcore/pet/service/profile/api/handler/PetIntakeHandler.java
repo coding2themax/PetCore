@@ -34,6 +34,11 @@ public class PetIntakeHandler {
   public Mono<ServerResponse> handleIntake(ServerRequest request) {
     String idempotencyKey = request.headers().firstHeader("X-Idempotency-Key");
 
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      return ServerResponse.badRequest()
+          .bodyValue("Missing required header: X-Idempotency-Key");
+    }
+
     Mono<PetIntakeRequest> petMono = request.bodyToMono(PetIntakeRequest.class)
         .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is required")))
         .map(body -> {
@@ -42,13 +47,10 @@ public class PetIntakeHandler {
           if (errors.hasErrors()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid pet intake request");
           }
-          if (idempotencyKey != null && !idempotencyKey.isBlank()) {
-            return new PetIntakeRequest(
-                body.name(), body.species(), body.breed(), body.sex(), body.age(),
-                body.size(), body.intakeDate(), body.intakeType(), body.status(),
-                body.externalReferenceId(), idempotencyKey);
-          }
-          return body;
+          return new PetIntakeRequest(
+              body.name(), body.species(), body.breed(), body.sex(), body.age(),
+              body.size(), body.intakeDate(), body.intakeType(), body.status(),
+              body.externalReferenceId(), idempotencyKey);
         });
     LOGGER.info("Handling pet intake request");
 

@@ -95,6 +95,7 @@ public class PetIntakeHandlerTest {
     // Then: returns 200 OK with PetResponse body
     webTestClient.post()
         .uri("/api/v1/pets")
+        .header("X-Idempotency-Key", "test-idempotency-key")
         .bodyValue(petIntakeRequest)
         .exchange()
         .expectStatus().isOk()
@@ -122,12 +123,23 @@ public class PetIntakeHandlerTest {
     // Then: returns 5xx Server Error
     webTestClient.post()
         .uri("/api/v1/pets")
+        .header("X-Idempotency-Key", "test-idempotency-key")
         .bodyValue(petIntakeRequest)
         .exchange()
         .expectStatus().is5xxServerError();
 
     // Verify service was called
     verify(petIntakeService).createPetProfile(any(PetIntakeRequest.class));
+  }
+
+  @Test
+  @DisplayName("POST /api/v1/pets without X-Idempotency-Key returns 400")
+  void testHandleIntake_missingIdempotencyKey_returns400() {
+    webTestClient.post()
+        .uri("/api/v1/pets")
+        .bodyValue(petIntakeRequest)
+        .exchange()
+        .expectStatus().isBadRequest();
   }
 
   @Test
@@ -191,6 +203,7 @@ public class PetIntakeHandlerTest {
 
     webTestClient.post()
         .uri("/api/v1/pets")
+        .header("X-Idempotency-Key", "test-idempotency-key")
         .bodyValue(missingName)
         .exchange()
         .expectStatus().isBadRequest();
