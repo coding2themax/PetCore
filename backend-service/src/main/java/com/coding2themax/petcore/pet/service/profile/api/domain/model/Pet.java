@@ -2,14 +2,17 @@ package com.coding2themax.petcore.pet.service.profile.api.domain.model;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Table("pets")
-public class Pet {
+@Table(value = "pets", schema = "petcore")
+public class Pet implements Persistable<UUID> {
 
   @Id
   private UUID id;
@@ -17,37 +20,28 @@ public class Pet {
   private Species species;
   private String breed;
   private Sex sex;
+  @Column("age_value")
   private int ageValue;
+  @Column("age_unit")
   private AgeUnit ageUnit;
   private Size size;
+  @Column("intake_date")
   private LocalDate intakeDate;
+  @Column("intake_type")
   private IntakeType intakeType;
   private PetStatus status;
+  @Column("external_reference_id")
   private String externalReferenceId;
 
+  @Column("idempotency_key")
+  private String idempotencyKey;
+
+  @Transient
+  private boolean isNewPet;
+
   @CreatedDate
+  @Column("created_at")
   private Instant createdAt;
-
-  // Default constructor for Spring Data
-  public Pet() {
-  }
-
-  public Pet(String name, Species species, String breed, Sex sex, Age age,
-      Size size, LocalDate intakeDate, IntakeType intakeType, PetStatus status,
-      String externalReferenceId) {
-    this.id = UUID.randomUUID();
-    this.name = name;
-    this.species = species;
-    this.breed = breed;
-    this.sex = sex;
-    this.ageValue = age.value();
-    this.ageUnit = age.unit();
-    this.size = size;
-    this.intakeDate = intakeDate;
-    this.intakeType = intakeType;
-    this.status = status;
-    this.externalReferenceId = externalReferenceId;
-  }
 
   public UUID getId() {
     return id;
@@ -138,11 +132,29 @@ public class Pet {
     this.externalReferenceId = externalReferenceId;
   }
 
+  public String getIdempotencyKey() {
+    return idempotencyKey;
+  }
+
+  public void setIdempotencyKey(String idempotencyKey) {
+    this.idempotencyKey = idempotencyKey;
+  }
+
   public Instant getCreatedAt() {
     return createdAt;
   }
 
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
+  }
+
+  @Override
+  public boolean isNew() {
+    return isNewPet || id == null;
+  }
+
+  public Pet setAsNewPet() {
+    this.isNewPet = true;
+    return this;
   }
 }

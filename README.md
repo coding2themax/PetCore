@@ -1,6 +1,6 @@
 # PetCore
 
-[![codecov](https://codecov.io/github/coding2themax/PetCore/branch/22-feature-code-coverage/graph/badge.svg)](https://codecov.io/github/coding2themax/PetCore)
+[![codecov](https://codecov.io/github/coding2themax/PetCore/branch/22-feature-code-coverage/graph/badge.svg)](https://codecov.io/github/coding2themax/PetCore)![GitHub License](https://img.shields.io/github/license/coding2themax/PetCore)
 
 **PetCore** is a domain-driven monolithic application for managing pet intake, profiles, matching, and search using large public datasets from animal shelters and animal welfare organizations.
 
