@@ -29,6 +29,26 @@ public class PetIntakeServicePostgres implements PetIntakeService {
   @Override
   @Transactional
   public Mono<PetResponse> createPetProfile(PetIntakeRequest request) {
+    if (request.externalReferenceId() != null && !request.externalReferenceId().isBlank()) {
+      return petRepository.findByExternalReferenceId(request.externalReferenceId())
+          .doOnSuccess(existing -> {
+            if (existing != null) {
+              LOGGER.info("Returning existing pet for idempotency key: " + request.externalReferenceId());
+            }
+          })
+          .map(existing -> new PetResponse(
+              existing.getId(),
+              existing.getName(),
+              existing.getSpecies().toString(),
+              existing.getBreed(),
+              existing.getStatus().toString(),
+              existing.getCreatedAt()))
+          .switchIfEmpty(buildAndSave(request));
+    }
+    return buildAndSave(request);
+  }
+
+  private Mono<PetResponse> buildAndSave(PetIntakeRequest request) {
     Pet pet = new Pet();
     pet.setName(request.name());
     pet.setSpecies(request.species());
@@ -39,16 +59,17 @@ public class PetIntakeServicePostgres implements PetIntakeService {
     pet.setIntakeDate(request.intakeDate());
     pet.setIntakeType(request.intakeType());
     pet.setStatus(request.status());
-
+    pet.setExternalReferenceId(request.externalReferenceId());
     pet.setAsNewPet();
 
-    return petRepository.save(pet).map(savedPet -> new PetResponse(
-        savedPet.getId(),
-        savedPet.getName(),
-        savedPet.getSpecies().toString(),
-        savedPet.getBreed(),
-        savedPet.getStatus().toString(),
-        savedPet.getCreatedAt()))
+    return petRepository.save(pet)
+        .map(savedPet -> new PetResponse(
+            savedPet.getId(),
+            savedPet.getName(),
+            savedPet.getSpecies().toString(),
+            savedPet.getBreed(),
+            savedPet.getStatus().toString(),
+            savedPet.getCreatedAt()))
         .doOnSuccess(savedPet -> LOGGER.info("Pet profile created with ID: " + savedPet.petId()))
         .doOnError(error -> LOGGER.severe("Error creating pet profile: " + error.getMessage()));
   }

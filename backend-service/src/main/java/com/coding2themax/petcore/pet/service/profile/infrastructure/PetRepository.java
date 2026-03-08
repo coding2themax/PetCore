@@ -7,7 +7,11 @@ import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
 
 import java.util.UUID;
 
+import reactor.core.publisher.Mono;
+
 @Repository
 public interface PetRepository extends ReactiveCrudRepository<Pet, UUID> {
+
+  Mono<Pet> findByExternalReferenceId(String externalReferenceId);
 
 }
