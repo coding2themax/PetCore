@@ -4,6 +4,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.Instant;
@@ -19,18 +20,24 @@ public class Pet implements Persistable<UUID> {
   private Species species;
   private String breed;
   private Sex sex;
+  @Column("age_value")
   private int ageValue;
+  @Column("age_unit")
   private AgeUnit ageUnit;
   private Size size;
+  @Column("intake_date")
   private LocalDate intakeDate;
+  @Column("intake_type")
   private IntakeType intakeType;
   private PetStatus status;
+  @Column("external_reference_id")
   private String externalReferenceId;
 
   @Transient
   private boolean isNewPet;
 
   @CreatedDate
+  @Column("created_at")
   private Instant createdAt;
 
   public UUID getId() {

@@ -163,22 +163,6 @@ public class PetIntakeHandlerTest {
   }
 
   @Test
-  void testHandleGetPetById_notFound() {
-    // Given: service returns empty Mono (pet does not exist)
-    BDDMockito.when(petIntakeService.getPetById(expectedId.toString()))
-        .thenReturn(Mono.empty());
-
-    // When: GET request to /api/v1/pets/{id}
-    // Then: returns 404 Not Found
-    webTestClient.get()
-        .uri("/api/v1/pets/" + expectedId)
-        .exchange()
-        .expectStatus().isNotFound();
-
-    verify(petIntakeService).getPetById(expectedId.toString());
-  }
-
-  @Test
   @DisplayName("POST /api/v1/pets with no body returns 400")
   void testHandleIntake_missingBody_returns400() {
     webTestClient.post()

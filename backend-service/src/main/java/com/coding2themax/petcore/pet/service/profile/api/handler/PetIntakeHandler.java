@@ -79,8 +79,7 @@ public class PetIntakeHandler {
               pet.status(),
               pet.createdAt());
           return ServerResponse.ok().bodyValue(response);
-        })
-        .switchIfEmpty(ServerResponse.notFound().build());
+        });
   }
 
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {

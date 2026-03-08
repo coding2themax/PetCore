@@ -1,15 +1,16 @@
-package com.coding2themax.petcore.pet.service.profile.application;
+package com.coding2themax.petcore.pet.service.profile.api.service;
 
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
-import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeService;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
 import reactor.core.publisher.Mono;
@@ -40,6 +41,7 @@ public class PetIntakeServicePostgres implements PetIntakeService {
     pet.setStatus(request.status());
 
     pet.setId(UUID.randomUUID());
+    pet.setAsNewPet();
 
     return petRepository.save(pet).map(savedPet -> new PetResponse(
         savedPet.getId(),
@@ -55,6 +57,7 @@ public class PetIntakeServicePostgres implements PetIntakeService {
   @Override
   public Mono<PetResponse> getPetById(String petId) {
     return petRepository.findById(UUID.fromString(petId))
+        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found with ID: " + petId)))
         .map(pet -> new PetResponse(
             pet.getId(),
             pet.getName(),

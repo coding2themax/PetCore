@@ -11,6 +11,8 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Age;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.AgeUnit;
@@ -22,6 +24,7 @@ import com.coding2themax.petcore.pet.service.profile.api.domain.model.Size;
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Species;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
+import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeServicePostgres;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
 import reactor.core.publisher.Mono;
@@ -130,7 +133,11 @@ public class PetIntakeServicePostgresTest {
         .thenReturn(Mono.empty());
 
     StepVerifier.create(petIntakeServicePostgres.getPetById(id.toString()))
-        .verifyComplete();
+        .expectErrorSatisfies(error -> {
+          Assertions.assertInstanceOf(ResponseStatusException.class, error);
+          Assertions.assertEquals(HttpStatus.NOT_FOUND, ((ResponseStatusException) error).getStatusCode());
+        })
+        .verify();
 
     BDDMockito.verify(petRepository).findById(id);
   }
