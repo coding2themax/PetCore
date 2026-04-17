@@ -2,13 +2,10 @@ spring:
   r2dbc:
     url: r2dbc:tc:postgresql:///test?TC_IMAGE_TAG=17
     username: postgres
-    # password: REDACTED
+    password: postgres
   sql:
     init:
       mode: always
-
-# Replace <your-vault-name> with your actual Azure Key Vault name
-azure.keyvault.uri=https://<your-vault-name>.vault.azure.net
 
 management:
   endpoints:
