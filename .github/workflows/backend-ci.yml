@@ -1,5 +1,6 @@
 name: Backend CI
-
+permissions:
+  id-token: write
 on:
   push:
     branches: [main, develop]
@@ -11,6 +12,10 @@ on:
     paths:
       - "backend-service/**"
       - ".github/workflows/backend-ci.yml"
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE}}
 
 jobs:
   build:
@@ -57,3 +62,12 @@ jobs:
           name: backend-coverage
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Additional steps
+        run: |
+          # Your commands that require AWS credentials
+          aws sts get-caller-identity
