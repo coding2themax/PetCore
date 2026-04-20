@@ -15,7 +15,7 @@ on:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   IMAGE_TAG: latest
 
@@ -65,19 +65,11 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Validate AWS publish secrets
-        shell: bash
-        run: |
-          [[ -n "$AWS_REGION" ]] || { echo "Missing GitHub secret: AWS_REGION"; exit 1; }
-          [[ -n "$AWS_ROLE_ARN" ]] || { echo "Missing GitHub secret: AWS_ROLE_ARN"; exit 1; }
-          [[ -n "$ECR_REPOSITORY" ]] || { echo "Missing GitHub secret: ECR_REPOSITORY"; exit 1; }
-
       - name: Configure AWS Credentials
-        if: github.event_name == 'push'
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         if: github.event_name == 'push'
