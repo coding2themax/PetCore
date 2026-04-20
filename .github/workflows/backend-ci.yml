@@ -3,20 +3,21 @@ permissions:
   id-token: write
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
     paths:
       - "backend-service/**"
       - ".github/workflows/backend-ci.yml"
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
     paths:
       - "backend-service/**"
       - ".github/workflows/backend-ci.yml"
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE}}
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  IMAGE_TAG: latest
 
 jobs:
   build:
@@ -63,10 +64,23 @@ jobs:
           name: backend-coverage
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Resolve AWS role ARN
+        id: aws-role
+        shell: bash
+        run: |
+          if [[ -n "$AWS_ROLE_ARN" ]]; then
+            echo "role_arn=${AWS_ROLE_ARN}" >> "$GITHUB_OUTPUT"
+          elif [[ -n "$AWS_ROLE_NAME" && -n "$AWS_ACCOUNT_ID" ]]; then
+            echo "role_arn=arn:aws:iam::${AWS_ACCOUNT_ID}:role/${AWS_ROLE_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Missing AWS role configuration. Set AWS_ROLE_ARN or both AWS_ROLE and AWS_ACCOUNT_ID."
+            exit 1
+          fi
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          role-to-assume: ${{ steps.aws-role.outputs.role_arn }}
           aws-region: ${{ env.AWS_REGION }}
       - name: Login to Amazon ECR
         id: login-ecr
