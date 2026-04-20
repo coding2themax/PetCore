@@ -76,7 +76,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Extract ECR registry
-        if: github.event_name == 'push'
         run: echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
 
       - name: Build Docker image
