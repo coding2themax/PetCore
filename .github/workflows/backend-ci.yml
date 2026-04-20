@@ -64,37 +64,44 @@ jobs:
           name: backend-coverage
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Resolve AWS role ARN
-        id: aws-role
+
+      - name: Validate AWS publish secrets
+        if: github.event_name == 'push'
         shell: bash
         run: |
-          if [[ -n "$AWS_ROLE_ARN" ]]; then
-            echo "role_arn=${AWS_ROLE_ARN}" >> "$GITHUB_OUTPUT"
-          elif [[ -n "$AWS_ROLE_NAME" && -n "$AWS_ACCOUNT_ID" ]]; then
-            echo "role_arn=arn:aws:iam::${AWS_ACCOUNT_ID}:role/${AWS_ROLE_NAME}" >> "$GITHUB_OUTPUT"
-          else
-            echo "Missing AWS role configuration. Set AWS_ROLE_ARN or both AWS_ROLE and AWS_ACCOUNT_ID."
-            exit 1
-          fi
+          [[ -n "$AWS_REGION" ]] || { echo "Missing GitHub secret: AWS_REGION"; exit 1; }
+          [[ -n "$AWS_ROLE_ARN" ]] || { echo "Missing GitHub secret: AWS_ROLE_ARN"; exit 1; }
+          [[ -n "$ECR_REPOSITORY" ]] || { echo "Missing GitHub secret: ECR_REPOSITORY"; exit 1; }
 
       - name: Configure AWS Credentials
+        if: github.event_name == 'push'
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
-          role-to-assume: ${{ steps.aws-role.outputs.role_arn }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Login to Amazon ECR
+        if: github.event_name == 'push'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Extract ECR registry
+        if: github.event_name == 'push'
         run: echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+
       - name: Build Docker image
+        if: github.event_name == 'push'
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
       - name: Tag image with commit SHA
+        if: github.event_name == 'push'
         run: |
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
                      $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+
       - name: Push images to ECR
+        if: github.event_name == 'push'
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}                     
