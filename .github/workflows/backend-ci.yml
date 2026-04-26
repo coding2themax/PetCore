@@ -81,16 +81,33 @@ jobs:
       - name: Extract ECR registry
         run: echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
 
+      - name: Validate and normalize image URI
+        run: |
+          set -euo pipefail
+          if [[ -z "${ECR_REGISTRY:-}" || -z "${ECR_REPOSITORY:-}" ]]; then
+            echo "ECR_REGISTRY or ECR_REPOSITORY is empty"
+            exit 1
+          fi
+
+          # Strip accidental whitespace/newlines from secrets before composing image URI.
+          ECR_REPOSITORY_CLEAN="$(echo "$ECR_REPOSITORY" | tr -d '\r\n' | xargs)"
+          if [[ -z "$ECR_REPOSITORY_CLEAN" ]]; then
+            echo "ECR_REPOSITORY resolves to empty after normalization"
+            exit 1
+          fi
+
+          echo "IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY_CLEAN" >> "$GITHUB_ENV"
+
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t "$IMAGE_URI:$IMAGE_TAG" .
 
       - name: Tag image with commit SHA
         run: |
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-                     $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+          docker tag "$IMAGE_URI:$IMAGE_TAG" \
+                     "$IMAGE_URI:${{ github.sha }}"
 
       - name: Push images to ECR
         run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}                     
+          docker push "$IMAGE_URI:$IMAGE_TAG"
+          docker push "$IMAGE_URI:${{ github.sha }}"
