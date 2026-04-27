@@ -94,12 +94,7 @@ jobs:
       - name: Build, Tag, and Push Docker image to ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_URI: ${{ secrets.ECR_REPOSITORY }}
-          IMAGE_TAG: latest
-          REPOSITORY: ${{ secrets.REPOSITORY }}
 
         run: |
-          # Build the Docker image
-
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker build -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
