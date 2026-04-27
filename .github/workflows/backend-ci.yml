@@ -1,6 +1,7 @@
 name: Backend CI
 permissions:
   id-token: write
+  contents: read
 on:
   push:
     branches: [ main, develop ]
@@ -12,6 +13,8 @@ on:
     paths:
       - "backend-service/**"
       - ".github/workflows/backend-ci.yml"
+  release:
+    types: [ published ]
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -65,6 +68,19 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  docker-deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'release' && github.event.action == 'published' && github.event.release.target_commitish == 'main'
+
+    defaults:
+      run:
+        working-directory: backend-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
@@ -75,19 +91,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Extract ECR registry
-        run: echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+      - name: Build, Tag, and Push Docker image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
-      - name: Build Docker image
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-
-      - name: Tag image with commit SHA
-        run: |
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-                     $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
-
-      - name: Push images to ECR
-        run: |
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}                     
+          docker build -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
