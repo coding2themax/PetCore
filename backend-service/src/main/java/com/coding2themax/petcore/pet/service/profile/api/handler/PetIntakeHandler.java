@@ -92,8 +92,10 @@ public class PetIntakeHandler {
   }
 
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {
-    LOGGER.info("Handling get pets request");
-    return petIntakeService.getAllPets()
+    String species = request.queryParam("species").orElse(null);
+    String status = request.queryParam("status").orElse(null);
+    LOGGER.info("Handling get pets request - species: " + species + ", status: " + status);
+    return petIntakeService.getAllPets(species, status)
         .map(pet -> new PetResponse(
             pet.petId(),
             pet.name(),

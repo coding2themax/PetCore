@@ -12,6 +12,6 @@ public interface PetIntakeService {
 
   Mono<PetResponse> getPetById(String petId);
 
-  Flux<PetResponse> getAllPets();
+  Flux<PetResponse> getAllPets(String species, String status);
 
 }
