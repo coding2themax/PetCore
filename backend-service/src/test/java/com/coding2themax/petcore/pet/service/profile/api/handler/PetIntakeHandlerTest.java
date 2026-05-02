@@ -31,6 +31,7 @@ import com.coding2themax.petcore.pet.service.profile.api.handler.validator.PetIn
 import com.coding2themax.petcore.pet.service.profile.api.router.PetIntakeRouter;
 import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeService;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
@@ -223,5 +224,69 @@ public class PetIntakeHandlerTest {
         .expectStatus().is5xxServerError();
 
     verify(petIntakeService).getPetById(expectedId.toString());
+  }
+
+  @Test
+  void testHandleGetPets_returnsPetList() {
+    // Given: service returns two pets
+    PetResponse pet1 = new PetResponse(expectedId, "Buddy", Species.DOG.name(), "Golden Retriever",
+        PetStatus.AVAILABLE.name(), expectedCreatedAt);
+    UUID id2 = UUID.randomUUID();
+    PetResponse pet2 = new PetResponse(id2, "Whiskers", Species.CAT.name(), "Tabby",
+        PetStatus.ADOPTED.name(), expectedCreatedAt);
+
+    BDDMockito.when(petIntakeService.getAllPets())
+        .thenReturn(Flux.just(pet1, pet2));
+
+    // When: GET request to /api/v1/pets
+    // Then: returns 200 OK with list of PetResponse
+    webTestClient.get()
+        .uri("/api/v1/pets")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(PetResponse.class)
+        .hasSize(2)
+        .value(list -> {
+          assertThat(list.get(0).petId()).isEqualTo(expectedId);
+          assertThat(list.get(0).name()).isEqualTo("Buddy");
+          assertThat(list.get(1).petId()).isEqualTo(id2);
+          assertThat(list.get(1).name()).isEqualTo("Whiskers");
+        });
+
+    verify(petIntakeService).getAllPets();
+  }
+
+  @Test
+  void testHandleGetPets_empty_returnsEmptyList() {
+    // Given: service returns no pets
+    BDDMockito.when(petIntakeService.getAllPets())
+        .thenReturn(Flux.empty());
+
+    // When: GET request to /api/v1/pets
+    // Then: returns 200 OK with empty list
+    webTestClient.get()
+        .uri("/api/v1/pets")
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(PetResponse.class)
+        .hasSize(0);
+
+    verify(petIntakeService).getAllPets();
+  }
+
+  @Test
+  void testHandleGetPets_serviceError_returns5xx() {
+    // Given: service throws an error
+    BDDMockito.when(petIntakeService.getAllPets())
+        .thenReturn(Flux.error(new RuntimeException("Database unavailable")));
+
+    // When: GET request to /api/v1/pets
+    // Then: returns 5xx Server Error
+    webTestClient.get()
+        .uri("/api/v1/pets")
+        .exchange()
+        .expectStatus().is5xxServerError();
+
+    verify(petIntakeService).getAllPets();
   }
 }

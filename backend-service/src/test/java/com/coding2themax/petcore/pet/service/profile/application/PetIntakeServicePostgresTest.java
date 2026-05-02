@@ -27,6 +27,7 @@ import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetRespons
 import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeServicePostgres;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -193,5 +194,58 @@ public class PetIntakeServicePostgresTest {
   void testGetPetById_invalidUuid_throwsIllegalArgumentException() {
     Assertions.assertThrows(IllegalArgumentException.class,
         () -> petIntakeServicePostgres.getPetById("not-a-uuid"));
+  }
+
+  @Test
+  void testGetAllPets_returnsPets() {
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet pet1 = new Pet();
+    pet1.setId(id1);
+    pet1.setName("Buddy");
+    pet1.setSpecies(Species.DOG);
+    pet1.setBreed("Golden Retriever");
+    pet1.setStatus(PetStatus.AVAILABLE);
+    pet1.setCreatedAt(createdAt);
+
+    Pet pet2 = new Pet();
+    pet2.setId(id2);
+    pet2.setName("Whiskers");
+    pet2.setSpecies(Species.CAT);
+    pet2.setBreed("Tabby");
+    pet2.setStatus(PetStatus.ADOPTED);
+    pet2.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.just(pet1, pet2));
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets())
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id1, resp.petId()),
+            () -> Assertions.assertEquals("Buddy", resp.name()),
+            () -> Assertions.assertEquals(Species.DOG.name(), resp.species()),
+            () -> Assertions.assertEquals("Golden Retriever", resp.breed()),
+            () -> Assertions.assertEquals(PetStatus.AVAILABLE.name(), resp.status()),
+            () -> Assertions.assertEquals(createdAt, resp.createdAt())))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id2, resp.petId()),
+            () -> Assertions.assertEquals("Whiskers", resp.name()),
+            () -> Assertions.assertEquals(Species.CAT.name(), resp.species())))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
+
+  @Test
+  void testGetAllPets_empty_returnsEmptyFlux() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets())
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
   }
 }

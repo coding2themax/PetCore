@@ -92,10 +92,16 @@ public class PetIntakeHandler {
   }
 
   public Mono<ServerResponse> handleGetPets(ServerRequest request) {
-    // Implementation for handling get pets request
     LOGGER.info("Handling get pets request");
-
-    // Placeholder responsex
-    return ServerResponse.ok().body(Mono.just("Get Pets Endpoint"), String.class);
+    return petIntakeService.getAllPets()
+        .map(pet -> new PetResponse(
+            pet.petId(),
+            pet.name(),
+            pet.species(),
+            pet.breed(),
+            pet.status(),
+            pet.createdAt()))
+        .collectList()
+        .flatMap(petResponses -> ServerResponse.ok().bodyValue(petResponses));
   }
 }

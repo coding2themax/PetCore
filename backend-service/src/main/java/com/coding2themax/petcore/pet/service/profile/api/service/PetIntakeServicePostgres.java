@@ -13,6 +13,7 @@ import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRe
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -70,6 +71,20 @@ public class PetIntakeServicePostgres implements PetIntakeService {
             savedPet.getCreatedAt()))
         .doOnSuccess(savedPet -> LOGGER.info("Pet profile created with ID: " + savedPet.petId()))
         .doOnError(error -> LOGGER.severe("Error creating pet profile: " + error.getMessage()));
+  }
+
+  @Override
+  public Flux<PetResponse> getAllPets() {
+    return petRepository.findAll()
+        .map(pet -> new PetResponse(
+            pet.getId(),
+            pet.getName(),
+            pet.getSpecies().toString(),
+            pet.getBreed(),
+            pet.getStatus().toString(),
+            pet.getCreatedAt()))
+        .doOnComplete(() -> LOGGER.info("Retrieved all pet profiles"))
+        .doOnError(error -> LOGGER.severe("Error retrieving all pet profiles: " + error.getMessage()));
   }
 
   @Override
