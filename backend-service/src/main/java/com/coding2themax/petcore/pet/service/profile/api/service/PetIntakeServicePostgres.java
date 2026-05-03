@@ -9,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.coding2themax.petcore.pet.service.profile.api.domain.model.Pet;
+import com.coding2themax.petcore.pet.service.profile.api.domain.model.PetStatus;
+import com.coding2themax.petcore.pet.service.profile.api.domain.model.Species;
 import com.coding2themax.petcore.pet.service.profile.api.dto.request.PetIntakeRequest;
 import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetResponse;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -70,6 +73,34 @@ public class PetIntakeServicePostgres implements PetIntakeService {
             savedPet.getCreatedAt()))
         .doOnSuccess(savedPet -> LOGGER.info("Pet profile created with ID: " + savedPet.petId()))
         .doOnError(error -> LOGGER.severe("Error creating pet profile: " + error.getMessage()));
+  }
+
+  @Override
+  public Flux<PetResponse> getAllPets(String speciesParam, String statusParam) {
+    Species species = (speciesParam != null && !speciesParam.isBlank()) ? Species.valueOf(speciesParam) : null;
+    PetStatus status = (statusParam != null && !statusParam.isBlank()) ? PetStatus.valueOf(statusParam) : null;
+
+    Flux<Pet> pets;
+    if (species != null && status != null) {
+      pets = petRepository.findBySpeciesAndStatus(species, status);
+    } else if (species != null) {
+      pets = petRepository.findBySpecies(species);
+    } else if (status != null) {
+      pets = petRepository.findByStatus(status);
+    } else {
+      pets = petRepository.findAll();
+    }
+
+    return pets
+        .map(pet -> new PetResponse(
+            pet.getId(),
+            pet.getName(),
+            pet.getSpecies().toString(),
+            pet.getBreed(),
+            pet.getStatus().toString(),
+            pet.getCreatedAt()))
+        .doOnComplete(() -> LOGGER.info("Retrieved all pet profiles"))
+        .doOnError(error -> LOGGER.severe("Error retrieving all pet profiles: " + error.getMessage()));
   }
 
   @Override

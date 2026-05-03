@@ -27,6 +27,7 @@ import com.coding2themax.petcore.pet.service.profile.api.dto.response.PetRespons
 import com.coding2themax.petcore.pet.service.profile.api.service.PetIntakeServicePostgres;
 import com.coding2themax.petcore.pet.service.profile.infrastructure.PetRepository;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -193,5 +194,160 @@ public class PetIntakeServicePostgresTest {
   void testGetPetById_invalidUuid_throwsIllegalArgumentException() {
     Assertions.assertThrows(IllegalArgumentException.class,
         () -> petIntakeServicePostgres.getPetById("not-a-uuid"));
+  }
+
+  @Test
+  void testGetAllPets_noFilter_returnsAllPets() {
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet pet1 = new Pet();
+    pet1.setId(id1);
+    pet1.setName("Buddy");
+    pet1.setSpecies(Species.DOG);
+    pet1.setBreed("Golden Retriever");
+    pet1.setStatus(PetStatus.AVAILABLE);
+    pet1.setCreatedAt(createdAt);
+
+    Pet pet2 = new Pet();
+    pet2.setId(id2);
+    pet2.setName("Whiskers");
+    pet2.setSpecies(Species.CAT);
+    pet2.setBreed("Tabby");
+    pet2.setStatus(PetStatus.ADOPTED);
+    pet2.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.just(pet1, pet2));
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets(null, null))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id1, resp.petId()),
+            () -> Assertions.assertEquals("Buddy", resp.name()),
+            () -> Assertions.assertEquals(Species.DOG.name(), resp.species()),
+            () -> Assertions.assertEquals("Golden Retriever", resp.breed()),
+            () -> Assertions.assertEquals(PetStatus.AVAILABLE.name(), resp.status()),
+            () -> Assertions.assertEquals(createdAt, resp.createdAt())))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id2, resp.petId()),
+            () -> Assertions.assertEquals("Whiskers", resp.name()),
+            () -> Assertions.assertEquals(Species.CAT.name(), resp.species())))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
+
+  @Test
+  void testGetAllPets_filterBySpecies_callsFindBySpecies() {
+    UUID id = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet pet = new Pet();
+    pet.setId(id);
+    pet.setName("Whiskers");
+    pet.setSpecies(Species.CAT);
+    pet.setBreed("Tabby");
+    pet.setStatus(PetStatus.FOSTER);
+    pet.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findBySpecies(Species.CAT))
+        .thenReturn(Flux.just(pet));
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets("CAT", null))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id, resp.petId()),
+            () -> Assertions.assertEquals(Species.CAT.name(), resp.species()),
+            () -> Assertions.assertEquals(PetStatus.FOSTER.name(), resp.status())))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findBySpecies(Species.CAT);
+    BDDMockito.verify(petRepository, BDDMockito.never()).findAll();
+  }
+
+  @Test
+  void testGetAllPets_filterByStatus_callsFindByStatus() {
+    UUID id = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet pet = new Pet();
+    pet.setId(id);
+    pet.setName("Buddy");
+    pet.setSpecies(Species.DOG);
+    pet.setBreed("Labrador");
+    pet.setStatus(PetStatus.FOSTER);
+    pet.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findByStatus(PetStatus.FOSTER))
+        .thenReturn(Flux.just(pet));
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets(null, "FOSTER"))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id, resp.petId()),
+            () -> Assertions.assertEquals(PetStatus.FOSTER.name(), resp.status())))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findByStatus(PetStatus.FOSTER);
+    BDDMockito.verify(petRepository, BDDMockito.never()).findAll();
+  }
+
+  @Test
+  void testGetAllPets_filterBySpeciesAndStatus_callsFindBySpeciesAndStatus() {
+    UUID id = UUID.randomUUID();
+    Instant createdAt = Instant.now();
+
+    Pet pet = new Pet();
+    pet.setId(id);
+    pet.setName("Whiskers");
+    pet.setSpecies(Species.CAT);
+    pet.setBreed("Tabby");
+    pet.setStatus(PetStatus.FOSTER);
+    pet.setCreatedAt(createdAt);
+
+    BDDMockito.when(petRepository.findBySpeciesAndStatus(Species.CAT, PetStatus.FOSTER))
+        .thenReturn(Flux.just(pet));
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets("CAT", "FOSTER"))
+        .assertNext(resp -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id, resp.petId()),
+            () -> Assertions.assertEquals(Species.CAT.name(), resp.species()),
+            () -> Assertions.assertEquals(PetStatus.FOSTER.name(), resp.status())))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findBySpeciesAndStatus(Species.CAT, PetStatus.FOSTER);
+    BDDMockito.verify(petRepository, BDDMockito.never()).findAll();
+  }
+
+  @Test
+  void testGetAllPets_empty_returnsEmptyFlux() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets(null, null))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
+
+  @Test
+  void testGetAllPets_blankSpecies_treatedAsNoFilter() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets("  ", null))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
+
+  @Test
+  void testGetAllPets_blankStatus_treatedAsNoFilter() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets(null, "  "))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
   }
 }

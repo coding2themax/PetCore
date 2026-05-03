@@ -1,6 +1,7 @@
 package com.coding2themax.petcore.pet.service.profile.api.router;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
@@ -102,5 +103,47 @@ public class PetIntakeRouterTest {
         .bodyValue("{\"species\":\"DOG\",\"breed\":\"Golden Retriever\",\"status\":\"AVAILABLE\"}")
         .exchange()
         .expectStatus().isBadRequest();
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/pets returns 200 with list of pets")
+  void testGetAllPets_found() {
+    Instant createdAt = Instant.now();
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    List<PetResponse> pets = List.of(
+        new PetResponse(id1, "Buddy", "DOG", "Golden Retriever", "AVAILABLE", createdAt),
+        new PetResponse(id2, "Whiskers", "CAT", "Tabby", "ADOPTED", createdAt));
+
+    BDDMockito.given(handler.handleGetPets(ArgumentMatchers.any()))
+        .willReturn(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(pets));
+
+    webTestClient.get()
+        .uri("/api/v1/pets")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(PetResponse.class)
+        .hasSize(2)
+        .value(list -> Assertions.assertAll(
+            () -> Assertions.assertEquals(id1, list.get(0).petId()),
+            () -> Assertions.assertEquals("Buddy", list.get(0).name()),
+            () -> Assertions.assertEquals(id2, list.get(1).petId()),
+            () -> Assertions.assertEquals("Whiskers", list.get(1).name())));
+  }
+
+  @Test
+  @DisplayName("GET /api/v1/pets returns 200 with empty list when no pets exist")
+  void testGetAllPets_empty() {
+    BDDMockito.given(handler.handleGetPets(ArgumentMatchers.any()))
+        .willReturn(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyValue(List.of()));
+
+    webTestClient.get()
+        .uri("/api/v1/pets")
+        .accept(MediaType.APPLICATION_JSON)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBodyList(PetResponse.class)
+        .hasSize(0);
   }
 }
