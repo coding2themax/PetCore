@@ -328,4 +328,26 @@ public class PetIntakeServicePostgresTest {
 
     BDDMockito.verify(petRepository).findAll();
   }
+
+  @Test
+  void testGetAllPets_blankSpecies_treatedAsNoFilter() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets("  ", null))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
+
+  @Test
+  void testGetAllPets_blankStatus_treatedAsNoFilter() {
+    BDDMockito.when(petRepository.findAll())
+        .thenReturn(Flux.empty());
+
+    StepVerifier.create(petIntakeServicePostgres.getAllPets(null, "  "))
+        .verifyComplete();
+
+    BDDMockito.verify(petRepository).findAll();
+  }
 }
