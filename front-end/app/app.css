@@ -13,3 +13,315 @@ body {
     color-scheme: dark;
   }
 }
+
+
+/**
+ * PetCore Design System — Colors & Typography
+ * Canonical CSS custom properties for both PetCore and PetStore Web products.
+ *
+ * Sources:
+ *   coding2themax/PetCore (React Router v7 + Tailwind CSS v4 + Inter)
+ *   coding2themax/petstore-web (React 18 + CSS Modules)
+ */
+
+:root {
+
+  /* ═══════════════════════════════════════════════════════════════
+     BASE COLOR PALETTE
+  ═══════════════════════════════════════════════════════════════ */
+
+  /* Primary — periwinkle indigo */
+  --color-primary:         #667eea;
+  --color-primary-hover:   #5a6fd8;
+  --color-primary-light:   rgba(102, 126, 234, 0.1);
+  --color-primary-focus:   rgba(102, 126, 234, 0.3);
+
+  /* Secondary — purple (gradient end) */
+  --color-secondary:       #764ba2;
+
+  /* Primary gradient */
+  --gradient-primary:      linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-page-bg:      linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+  /* Semantic greens */
+  --color-success:         #28a745;
+  --color-success-light:   #d4edda;
+  --color-success-text:    #155724;
+
+  /* Warning amber */
+  --color-warning:         #ffc107;
+  --color-warning-light:   #fff3cd;
+  --color-warning-text:    #856404;
+
+  /* Danger red */
+  --color-danger:          #ff4757;
+  --color-danger-hover:    #e63946;
+
+  /* Info teal */
+  --color-info:            #17a2b8;
+  --color-info-light:      #d1ecf1;
+  --color-info-text:       #0c5460;
+
+  /* ═══════════════════════════════════════════════════════════════
+     NEUTRAL SCALE
+  ═══════════════════════════════════════════════════════════════ */
+
+  --color-white:           #ffffff;
+  --color-gray-50:         #f8f9fa;   /* page / card backgrounds */
+  --color-gray-100:        #f1f3f5;
+  --color-gray-200:        #e9ecef;   /* borders, dividers, tag bg */
+  --color-gray-300:        #dee2e6;
+  --color-gray-400:        #ced4da;
+  --color-gray-500:        #adb5bd;   /* muted text (footer) */
+  --color-gray-600:        #6c757d;   /* secondary text */
+  --color-gray-700:        #495057;   /* label text */
+  --color-gray-800:        #343a40;   /* footer background */
+  --color-gray-850:        #333333;   /* primary body text */
+  --color-gray-900:        #212529;
+  --color-black:           #121212;   /* PetCore logo accent */
+
+  /* Dark mode bg (PetCore app) */
+  --color-dark-bg:         #030712;   /* gray-950 Tailwind */
+
+  /* ═══════════════════════════════════════════════════════════════
+     SEMANTIC COLOR TOKENS
+  ═══════════════════════════════════════════════════════════════ */
+
+  /* Text */
+  --fg1:                   var(--color-gray-850);   /* primary text */
+  --fg2:                   var(--color-gray-600);   /* secondary / muted */
+  --fg3:                   var(--color-gray-500);   /* placeholder, disabled */
+  --fg-inverse:            var(--color-white);      /* text on dark bg */
+  --fg-accent:             var(--color-primary);    /* accent links, labels */
+  --fg-price:              var(--color-success);    /* price amounts */
+  --fg-danger:             var(--color-danger);     /* error, cart badges */
+
+  /* Backgrounds */
+  --bg-page:               var(--color-white);
+  --bg-subtle:             var(--color-gray-50);
+  --bg-card:               var(--color-white);
+  --bg-header:             var(--gradient-primary);
+  --bg-footer:             var(--color-gray-800);
+  --bg-input:              var(--color-white);
+  --bg-tag:                var(--color-gray-200);
+  --bg-tag-accent:         var(--color-primary);
+  --bg-badge-health:       rgba(255, 255, 255, 0.9);
+  --bg-dark:               var(--color-dark-bg);
+
+  /* Borders */
+  --border-default:        var(--color-gray-200);
+  --border-input:          var(--color-gray-200);
+  --border-input-focus:    var(--color-primary);
+  --border-card:           transparent;
+  --border-accent:         var(--color-primary);     /* left accent on guidance cards */
+  --border-warning:        var(--color-warning);
+
+  /* ═══════════════════════════════════════════════════════════════
+     SPACING SCALE
+  ═══════════════════════════════════════════════════════════════ */
+
+  --space-1:    0.25rem;   /*  4px */
+  --space-2:    0.5rem;    /*  8px */
+  --space-3:    0.75rem;   /* 12px */
+  --space-4:    1rem;      /* 16px */
+  --space-5:    1.25rem;   /* 20px */
+  --space-6:    1.5rem;    /* 24px */
+  --space-8:    2rem;      /* 32px */
+  --space-10:   2.5rem;    /* 40px */
+  --space-12:   3rem;      /* 48px */
+  --space-16:   4rem;      /* 64px */
+
+  /* ═══════════════════════════════════════════════════════════════
+     BORDER RADIUS
+  ═══════════════════════════════════════════════════════════════ */
+
+  --radius-sm:      4px;    /* tiny chips */
+  --radius-md:      6px;    /* nav links, small buttons */
+  --radius-lg:      8px;    /* buttons, inputs */
+  --radius-xl:      12px;   /* feature cards, filter panels, page headers */
+  --radius-2xl:     16px;   /* pet cards */
+  --radius-3xl:     20px;   /* species pill */
+  --radius-pill:    9999px; /* tags, badges */
+  --radius-circle:  50%;    /* avatars, social icons */
+
+  /* ═══════════════════════════════════════════════════════════════
+     SHADOWS
+  ═══════════════════════════════════════════════════════════════ */
+
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:    0 2px 4px rgba(0, 0, 0, 0.10);
+  --shadow-md:    0 4px 6px rgba(0, 0, 0, 0.10);
+  --shadow-card:  0 4px 12px rgba(0, 0, 0, 0.10);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --shadow-header:0 2px 10px rgba(0, 0, 0, 0.10);
+  --shadow-focus: 0 0 0 3px rgba(102, 126, 234, 0.20);
+
+  /* ═══════════════════════════════════════════════════════════════
+     TRANSITIONS
+  ═══════════════════════════════════════════════════════════════ */
+
+  --transition-fast:    all 0.15s ease;
+  --transition-default: all 0.3s ease;
+  --transition-slow:    all 0.5s ease;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — FONT FAMILIES
+  ═══════════════════════════════════════════════════════════════ */
+
+  --font-sans:   'Inter', ui-sans-serif, system-ui, -apple-system,
+                 BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:   'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — SIZE SCALE
+  ═══════════════════════════════════════════════════════════════ */
+
+  --text-xs:    0.75rem;    /* 12px — micro labels */
+  --text-sm:    0.85rem;    /* ~14px — small badges, meta */
+  --text-base:  1rem;       /* 16px — body */
+  --text-md:    1.1rem;     /* ~18px — large body, taglines */
+  --text-lg:    1.3rem;     /* ~21px — card headings */
+  --text-xl:    1.5rem;     /* 24px — section headings */
+  --text-2xl:   1.8rem;     /* ~29px — page subheadings */
+  --text-3xl:   2rem;       /* 32px — hero h2 */
+  --text-4xl:   2.5rem;     /* 40px — page h1 */
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — WEIGHT
+  ═══════════════════════════════════════════════════════════════ */
+
+  --weight-light:     300;
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+  --weight-black:     900;
+
+  /* ═══════════════════════════════════════════════════════════════
+     TYPOGRAPHY — LINE HEIGHT
+  ═══════════════════════════════════════════════════════════════ */
+
+  --leading-tight:    1.2;
+  --leading-snug:     1.4;
+  --leading-normal:   1.6;
+  --leading-relaxed:  1.7;
+
+  /* ═══════════════════════════════════════════════════════════════
+     SEMANTIC TYPE TOKENS — ELEMENT DEFAULTS
+  ═══════════════════════════════════════════════════════════════ */
+
+  --h1-size:      var(--text-4xl);
+  --h1-weight:    var(--weight-bold);
+  --h1-leading:   var(--leading-tight);
+  --h1-color:     var(--fg1);
+
+  --h2-size:      var(--text-3xl);
+  --h2-weight:    var(--weight-bold);
+  --h2-leading:   var(--leading-tight);
+  --h2-color:     var(--fg1);
+
+  --h3-size:      var(--text-lg);
+  --h3-weight:    var(--weight-semibold);
+  --h3-leading:   var(--leading-snug);
+  --h3-color:     var(--fg1);
+
+  --h4-size:      var(--text-xl);
+  --h4-weight:    var(--weight-semibold);
+  --h4-leading:   var(--leading-snug);
+  --h4-color:     var(--fg1);
+
+  --p-size:       var(--text-base);
+  --p-weight:     var(--weight-regular);
+  --p-leading:    var(--leading-normal);
+  --p-color:      var(--fg2);
+
+  --label-size:   var(--text-sm);
+  --label-weight: var(--weight-semibold);
+  --label-color:  var(--fg2);
+
+  --caption-size: var(--text-xs);
+  --caption-color: var(--fg3);
+
+  --link-color:     var(--color-primary);
+  --link-hover:     var(--color-primary-hover);
+
+  --code-font:    var(--font-mono);
+  --code-size:    0.9em;
+
+  /* ═══════════════════════════════════════════════════════════════
+     LAYOUT
+  ═══════════════════════════════════════════════════════════════ */
+
+  --container-max:  1200px;
+  --container-px:   20px;
+
+  --z-sticky:   1000;
+  --z-modal:    2000;
+  --z-tooltip:  3000;
+}
+
+/* ─── Dark Mode (PetCore app) ─────────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page:      var(--color-dark-bg);
+    --bg-subtle:    #111827;
+    --bg-card:      #1f2937;
+    --fg1:          #f9fafb;
+    --fg2:          #9ca3af;
+    --fg3:          #6b7280;
+    --border-default: #374151;
+    --border-input:   #374151;
+  }
+}
+
+/* ─── Semantic element defaults ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--fg1);
+  background-color: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 { font-size: var(--h1-size); font-weight: var(--h1-weight); line-height: var(--h1-leading); color: var(--h1-color); margin: 0 0 var(--space-4); }
+h2 { font-size: var(--h2-size); font-weight: var(--h2-weight); line-height: var(--h2-leading); color: var(--h2-color); margin: 0 0 var(--space-4); }
+h3 { font-size: var(--h3-size); font-weight: var(--h3-weight); line-height: var(--h3-leading); color: var(--h3-color); margin: 0 0 var(--space-3); }
+h4 { font-size: var(--h4-size); font-weight: var(--h4-weight); line-height: var(--h4-leading); color: var(--h4-color); margin: 0 0 var(--space-3); }
+
+p {
+  font-size: var(--p-size);
+  font-weight: var(--p-weight);
+  line-height: var(--p-leading);
+  color: var(--p-color);
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+a:hover { color: var(--link-hover); }
+
+code, pre {
+  font-family: var(--code-font);
+  font-size: var(--code-size);
+}
+
+label {
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  color: var(--label-color);
+}
+
+/* ─── Container utility ───────────────────────────────────────────────────── */
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-px);
+}
